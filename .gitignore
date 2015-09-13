@@ -1,0 +1,9 @@
+Binaries
+DerivedDataCache
+Intermediate
+Saved
+Build
+*.suo
+*.sdf
+*.pdb
+*.sln
