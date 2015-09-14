@@ -141,6 +141,10 @@ UPacketReaderNeuron::UPacketReaderNeuron() : UPacketReader()
 	Initialize();
 }
 
+UPacketReaderNeuron::~UPacketReaderNeuron()
+{
+}
+
 //UPacketReaderNeuron::UPacketReaderNeuron(const FObjectInitializer& ObjectInitializer)
 //	: Super(ObjectInitializer)
 //{

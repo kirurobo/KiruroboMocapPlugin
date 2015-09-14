@@ -15,6 +15,7 @@ class UPacketReaderMvn : public UPacketReader
 
 public:
 	UPacketReaderMvn();
+	virtual ~UPacketReaderMvn();
 
 	const static uint8 BoneCount;
 	const static uint8 BoneIndices[];

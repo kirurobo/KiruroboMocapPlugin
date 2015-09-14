@@ -14,6 +14,7 @@ class UPacketReader //: public UObject
 {
 public:
 	UPacketReader();
+	~UPacketReader();
 
 protected:
 	int8 BoneNumber = 0;
@@ -24,7 +25,7 @@ protected:
 	virtual void Initialize();
 
 	/*  関節一つ分を解析 */
-	virtual void ProcessSegment(const uint8* data, const int32 segmentNo);
+	void ProcessSegment(const uint8* data, const int32 segmentNo);
 
 	/*  floatとして解釈 */
 	float GetFloat(const uint8* data, const int32 index);

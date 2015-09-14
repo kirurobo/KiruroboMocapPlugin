@@ -15,6 +15,10 @@ UPacketReader::UPacketReader()
 	Initialize();
 }
 
+UPacketReader::~UPacketReader()
+{
+}
+
 void UPacketReader::Initialize()
 {
 	/*  ボーン総数を取得 */

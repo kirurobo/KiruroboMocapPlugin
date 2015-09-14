@@ -10,6 +10,9 @@ UMocapReceiver::UMocapReceiver( const FObjectInitializer& ObjectInitializer )
 	Initialize();
 }
 
+UMocapReceiver::~UMocapReceiver()
+{
+}
 
 // Sets default values
 void UMocapReceiver::Initialize()
@@ -71,11 +74,11 @@ void UMocapReceiver::Close()
 		m_Socket = NULL;
 	}
 	if (packetReaderMvn != NULL) {
-		delete packetReaderMvn;
+		delete (UPacketReaderMvn*)packetReaderMvn;
 		packetReaderMvn = NULL;
 	}
 	if (packetReaderNeuron != NULL) {
-		delete packetReaderNeuron;
+		delete (UPacketReaderNeuron*)packetReaderNeuron;
 		packetReaderNeuron = NULL;
 	}
 }

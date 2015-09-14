@@ -17,6 +17,10 @@ class UMocapReceiver : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
+public:
+	virtual ~UMocapReceiver();
+
+protected:
 	FSocket *m_Socket;
 	FUdpSocketReceiver *m_Receiver;
 	FRunnableThread *m_Thread;

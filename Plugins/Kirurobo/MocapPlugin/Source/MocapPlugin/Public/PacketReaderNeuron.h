@@ -15,6 +15,7 @@ class UPacketReaderNeuron : public UPacketReader
 
 public:
 	UPacketReaderNeuron();
+	virtual ~UPacketReaderNeuron();
 
 	const static uint8 BoneCount;
 	const static uint8 BoneIndices [];

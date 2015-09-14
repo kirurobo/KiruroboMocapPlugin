@@ -70,6 +70,10 @@ UPacketReaderMvn::UPacketReaderMvn() : UPacketReader()
 	Initialize();
 }
 
+UPacketReaderMvn::~UPacketReaderMvn()
+{
+}
+
 //UPacketReaderMvn::UPacketReaderMvn(const FObjectInitializer& ObjectInitializer)
 //	: Super(ObjectInitializer)
 //{
@@ -167,8 +171,8 @@ bool UPacketReaderMvn::CheckHeader(const FArrayReaderPtr& data)
 	/*  サンプルカウンタを確認 */
 	index = 6;
 	int32 count = GetBigEndianInt32(raw, index);
-	if ((count < this->SampleCount) && ((this->SampleCount - count) >= 4)) {
-		/*  前回のカウンタよりも小さく、それが4フレーム以内ならば古いデータとみなして破棄する。 */
+	if ((count < this->SampleCount) && ((this->SampleCount - count) <= 15)) {
+		/*  前回のカウンタよりも小さく、それが15フレーム以内ならば古いデータとみなして破棄する。 */
 		/* 	あまり大きな差があれば、MVNを再起動した可能性があるので破棄せず採用する。 */
 		return false;
 	}
