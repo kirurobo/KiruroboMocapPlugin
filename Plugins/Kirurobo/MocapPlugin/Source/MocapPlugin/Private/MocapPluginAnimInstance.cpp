@@ -2,6 +2,7 @@
 
 #include "MocapPluginPrivatePCH.h"
 #include "MocapPluginAnimInstance.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 /**
 * コンストラクタ
@@ -245,6 +246,9 @@ bool UMocapPluginAnimInstance::NativeEvaluateAnimation(FPoseContext& Output)
 
 	if (this->BoneRotations.Num() < this->BoneCount) return false;
 
+	USkeletalMeshComponent* meshComponent = GetOwningComponent();
+	if (!meshComponent) return false;
+
 	if (RootNode != NULL) {
 		RootNode->Evaluate(Output);
 	}
@@ -252,8 +256,59 @@ bool UMocapPluginAnimInstance::NativeEvaluateAnimation(FPoseContext& Output)
 		Output.ResetToRefPose();
 	}
 
-	USkeletalMeshComponent* meshComponent = GetOwningComponent();
-	if (!meshComponent) return false;
+#if (ENGINE_MAJOR_VERSION >= 4) && (ENGINE_MINOR_VERSION >= 9)
+	/* UE 4.9 以降の場合。 FPoseContext の中身が変わり、そのまま使えなくなった。 */
+
+	/* Rootからの親ボーン姿勢を計算。子より必ず親の番号が小さくなければならない。 */
+	TArray<FQuat> parentRotations;
+	parentRotations.Reserve(Output.Pose.GetNumBones());
+	for (int i = 0; i < Output.Pose.GetNumBones(); i++) {
+		FCompactPoseBoneIndex index(i);
+		FQuat rotation = Output.Pose[index].GetRotation();
+		FCompactPoseBoneIndex parentBoneIndex = Output.Pose.GetParentBoneIndex(index);
+		if (parentBoneIndex >= 0 && parentBoneIndex < parentRotations.Num()) {
+			rotation = parentRotations[parentBoneIndex.GetInt()] * rotation;
+		}
+		parentRotations.Add(rotation);
+	}
+
+	/* 各ボーンに受信された変形を反映 */
+	for (int i = 0; i < this->BoneNames.Num(); i++) {
+		if (this->MocapBones.Num() <= i) break;
+
+		FName boneName = this->BoneNames[i];
+		uint8 mocapBoneIndex = this->MocapBones[i];
+
+		FBoneIndexType boneIndex = meshComponent->GetBoneIndex(boneName);
+		if (boneIndex < 0 || boneIndex > 0x7FFF) continue;
+
+		FCompactPoseBoneIndex index(boneIndex);
+		FTransform transform = Output.Pose[index];
+		FQuat rotation = this->BoneRotations[mocapBoneIndex];
+
+		//UE_LOG(LogTemp, Log, TEXT("Root Rot.: %d %d"), boneIndex, rotation.X);
+
+		FCompactPoseBoneIndex parentBoneIndex = Output.Pose.GetParentBoneIndex(index);
+		if (parentBoneIndex >= 0) {
+			FQuat parentRotation = parentRotations[parentBoneIndex.GetInt()];
+			rotation = parentRotation.Inverse() * rotation * parentRotation * transform.GetRotation();
+		}
+		else {
+			rotation = rotation * transform.GetRotation();
+		}
+		transform.SetRotation(rotation);
+		Output.Pose[index].SetRotation(rotation);
+	}
+
+	/* ルートの移動を反映 */
+	if (this->UseRootPosition && (Output.Pose.GetNumBones() > 0)) {
+		FCompactPoseBoneIndex index(0);
+		Output.Pose[index].SetTranslation(this->RootPosition);
+
+		//UE_LOG(LogTemp, Log, TEXT("Root position: %d %f %f %f"), index.GetInt(), this->RootPosition.X, this->RootPosition.Y, this->RootPosition.Z);
+	}
+#else
+	/* UE 4.8 以前の場合 */
 
 	FA2CSPose pose;
 	pose.AllocateLocalPoses(RequiredBones, Output.Pose);
@@ -303,8 +358,9 @@ bool UMocapPluginAnimInstance::NativeEvaluateAnimation(FPoseContext& Output)
 
 		//UE_LOG(LogTemp, Log, TEXT("Root position: %f %f %f"), this->RootPosition.X, this->RootPosition.Y, this->RootPosition.Z);
 	}
-	
+
 	pose.ConvertToLocalPoses(Output.Pose);
+#endif
 
 	return true;
 }

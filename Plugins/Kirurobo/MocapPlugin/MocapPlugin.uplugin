@@ -2,13 +2,14 @@
 	"FileVersion" : 3,
 	"FriendlyName" : "Mocap Plugin",
 	"Version" : 0,
-	"VersionName" : "0.0",
+	"VersionName" : "0.2",
 	"CreatedBy" : "Kirurobo",
 	"CreatedByURL" : "http://www.kirurobo.com",
 	"EngineVersion" : "4.7.6",
 	"Description" : "Real-time motion capture (MVN / Axis Neuron / Kinect) receiver.",
 	"Category" : "Input",
 	"EnabledByDefault" : true,
+	"IsBetaVersion" : true,
 	
 	"Modules" :
 	[

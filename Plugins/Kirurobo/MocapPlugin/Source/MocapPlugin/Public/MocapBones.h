@@ -119,7 +119,7 @@ namespace EMocapMvnBones
 		RightForeArm = 48,
 		RightHand = 49,
 
-		None = 255,
+		None = 254,
 	};
 }
 
@@ -191,7 +191,7 @@ namespace EMocapNeuronBones
 		RightHandPinky2 = 69,
 		RightHandPinky3 = 70,
 
-		None = 255,
+		None = 254,
 	};
 }
 
@@ -229,7 +229,7 @@ namespace EMocapKinectBones
 		ThumbRight = 52,
 		HandTipRight = 61,
 
-		None = 255,
+		None = 254,
 	};
 }
 
