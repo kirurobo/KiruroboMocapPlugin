@@ -2,6 +2,8 @@
 
 #include "MocapPluginPrivatePCH.h"
 #include "PacketReaderNeuron.h"
+#include "Runtime/Launch/Resources/Version.h"
+
 
 const uint8 UPacketReaderNeuron::BoneCount = 59;
 
@@ -261,18 +263,39 @@ FVector UPacketReaderNeuron::GetPosition(const uint8* data, const int32 index)
 }
 
 /**
-* 座標をUEの座標系で返す。AXIS Neuron では XZY の順としておくこと！
+* 姿勢をUEの座標系で返す。AXIS Neuron では YXZ の順としておくこと！
 */
 FQuat UPacketReaderNeuron::GetQuaternion(const uint8* data, const int32 index)
 {
+	/* deg を rad にし、さらに半分にする係数*/
+	static const float halfRadCoef = HALF_PI / 180.0f;
+
+	/*  BVH 右手系 YXZ -> UE4 左手系 ZXY */
 	FVector euler = FVector();
+	euler.Z = -GetFloat(data, index);
+	euler.X = -GetFloat(data, index + 4);
+	euler.Y = -GetFloat(data, index + 8);
 
-	/*  for XZY */
-	euler.X = GetFloat(data, index);
-	euler.Y = GetFloat(data, index + 4);
-	euler.Z = -GetFloat(data, index + 8);
+	float sx, sy, sz, cx, cy, cz;
 
-	FQuat quat = FQuat::MakeFromEuler(euler);
+#if (ENGINE_MAJOR_VERSION >= 4) && (ENGINE_MINOR_VERSION >= 8)
+	FMath::SinCos(&sx, &cx, euler.X * halfRadCoef);
+	FMath::SinCos(&sy, &cy, euler.Y * halfRadCoef);
+	FMath::SinCos(&sz, &cz, euler.Z * halfRadCoef);
+#else
+	sx = FMath::Sin(euler.X * halfRadCoef);
+	sy = FMath::Sin(euler.Y * halfRadCoef);
+	sz = FMath::Sin(euler.Z * halfRadCoef);
+	cx = FMath::Cos(euler.X * halfRadCoef);
+	cy = FMath::Cos(euler.Y * halfRadCoef);
+	cz = FMath::Cos(euler.Z * halfRadCoef);
+#endif
+
+	FQuat qx = FQuat(sx, 0, 0, cx);
+	FQuat qy = FQuat(0, sy, 0, cy);
+	FQuat qz = FQuat(0, 0, sz, cz);
+
+	FQuat quat = qz * qx * qy;
 
 	return quat;
 }

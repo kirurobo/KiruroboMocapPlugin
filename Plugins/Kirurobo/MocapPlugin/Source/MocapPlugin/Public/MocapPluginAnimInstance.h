@@ -67,7 +67,8 @@ protected:
 public:
 	/**
 	* モーションキャプチャからのデータのうち、このAnimInstanceで対象とするユーザーID。
-	* -1にするとユーザーIDで区別しない。
+	* 複数人分を同時に送信しているならば指定する。
+	* -1にするとユーザーIDで区別せず、受信したものをすべて利用する。
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
 		int32 UserId = -1;
@@ -79,13 +80,15 @@ public:
 		bool UseRootPosition = true;
 
 	/**
-	* 動かすボーン名を順に指定する
+	* 動かすボーン名を順に指定します。
+	* Mocap Bones の順番と対応させてください。
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
 		TArray<FName> BoneNames;
 
 	/**
-	* 割り当てるボーンを順に指定する
+	* 割り当てるボーンを順に指定します。
+	* Bone Names の順番と対応させてください。
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
 		TArray<TEnumAsByte<EMocapBones::Type>> MocapBones;

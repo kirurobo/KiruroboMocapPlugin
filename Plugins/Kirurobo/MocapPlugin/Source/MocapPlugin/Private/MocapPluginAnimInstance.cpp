@@ -338,8 +338,6 @@ bool UMocapPluginAnimInstance::NativeEvaluateAnimation(FPoseContext& Output)
 		FTransform transform = pose.Bones[boneIndex];
 		FQuat rotation = this->BoneRotations[mocapBoneIndex];
 
-		//UE_LOG(LogTemp, Log, TEXT("Root Rot.: %d %d"), boneIndex, rotation.X);
-
 		int32 parentBoneIndex = pose.GetParentBoneIndex(boneIndex);
 		if (parentBoneIndex >= 0) {
 			FQuat parentRotation = parentRotations[parentBoneIndex];
