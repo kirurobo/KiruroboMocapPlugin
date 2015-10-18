@@ -28,7 +28,10 @@ bool UMocapPluginGameInstance::Connect(int32 port)
 		this->MocapReceiver->Close();
 
 		this->MocapReceiver->Port = this->PortNo;
-		this->MocapReceiver->MultiUsers = this->MultiUsers;
+		this->MocapReceiver->MvnUserIdOffset = this->MvnUserIdOffset;
+		this->MocapReceiver->NeuronUserIdOffset = this->NeuronUserIdOffset;
+		this->MocapReceiver->KinectUserIdOffset = this->KinectUserIdOffset;
+
 		return this->MocapReceiver->Connect();
 	}
 	return false;
@@ -53,5 +56,6 @@ FVector UMocapPluginGameInstance::GetRootPosition(const int32 userId, const UMoc
 	if (instance == NULL || instance->MocapReceiver == NULL) {
 		return FVector::ZeroVector;
 	}
-	return instance->MocapReceiver->RootPosition;
+
+	return instance->MocapReceiver->GetMocapPose(userId)->GetRootPosition();
 }

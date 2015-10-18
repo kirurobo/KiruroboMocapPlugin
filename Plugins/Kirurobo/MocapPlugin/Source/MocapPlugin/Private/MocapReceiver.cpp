@@ -17,14 +17,7 @@ UMocapReceiver::~UMocapReceiver()
 // Sets default values
 void UMocapReceiver::Initialize()
 {
-	UEnum* pBones = FindObject<UEnum>(ANY_PACKAGE, TEXT("EMocapBones"), true);
-	BONE_NUMBER = pBones->NumEnums();
-
-	/*  値を保持する配列を準備 */
-	BoneRotations.Reserve(BONE_NUMBER);
-	for (int i = 0; i < BONE_NUMBER; i++) {
-		BoneRotations.Add(FQuat(0, 0, 0, 1));
-	}
+	this->IdentityPose = NewObject<UMocapPose>();
 }
 
 
@@ -43,16 +36,18 @@ bool UMocapReceiver::Connect()
 		const bool bAutoDeleteSelf = true;
 		const bool bAutoDeleteRunnable = true;
 
-		m_Receiver = new FUdpSocketReceiver(m_Socket, FTimespan(0, 0, 1), TEXT("Mocap UDP receiver"));
-		m_Receiver->OnDataReceived().BindUObject(this, &UMocapReceiver::UdpReceivedCallback);
+		/* 受信されたデータの保存領域 */
+		CurrentPose = NewObject<UMocapPose>();
 
 		/*  パケット解釈部 */
 		packetReaderMvn = new UPacketReaderMvn();
 		//packetReaderKinect = new UPacketReaderKinect();
 		packetReaderNeuron = new UPacketReaderNeuron();
 
-		this->BoneRotations = packetReaderMvn->BoneRotations;
-		this->RootPosition = packetReaderMvn->RootPosition;
+		/* UDP受信を開始 */
+		m_Receiver = new FUdpSocketReceiver(m_Socket, FTimespan(0, 0, 1), TEXT("Mocap UDP receiver"));
+		m_Receiver->OnDataReceived().BindUObject(this, &UMocapReceiver::UdpReceivedCallback);
+
 		return true;
 	}
 	return false;
@@ -86,11 +81,48 @@ void UMocapReceiver::Close()
 /*  UDPでデータが届いた際のコールバック */
 void UMocapReceiver::UdpReceivedCallback(const FArrayReaderPtr& data, const FIPv4Endpoint&)
 {
-	if (packetReaderMvn->Read(data)) {
-		this->RootPosition = packetReaderMvn->RootPosition;
-		this->BoneRotations = packetReaderMvn->BoneRotations;
-	} else if (packetReaderNeuron->Read(data)) {
-		this->RootPosition = packetReaderNeuron->RootPosition;
-		this->BoneRotations = packetReaderNeuron->BoneRotations;
+	bool received = false;
+	
+	/* モーキャプソフト毎にその形式か調べて受信する */
+	if (packetReaderMvn->Read(data, this->CurrentPose)) {
+		received = true;
+		this->CurrentPose->UserId += this->MvnUserIdOffset;
+	} else if (packetReaderNeuron->Read(data, this->CurrentPose)) {
+		received = true;
+		this->CurrentPose->UserId += this->NeuronUserIdOffset;
+	}
+
+	/* 受信できたらユーザーID毎に保存する */
+	if (received) {
+		int userId = this->CurrentPose->UserId;
+
+		UMocapPose** pPose = this->Poses.Find(userId);
+		if (pPose == nullptr) {
+			/*  初回受信。現在の位置が原点となるようオフセットを設定 */
+			//this->CurrentPose->PositionOffset = -this->CurrentPose->OriginalRootPosition;
+			UMocapPose* pose = this->CurrentPose->Clone();
+			pose->PositionOffset = -pose->OriginalRootPosition;
+			if (this->Poses.Num() < 1) {
+				this->CurrentPose->PositionOffset = pose->PositionOffset;
+			}
+			this->Poses.Add(userId, pose);
+		}
+		else {
+			/* 既に受信されたユーザーならば値の複製のみ */
+			this->CurrentPose->CopyTo(*pPose);
+		}
+	}
+}
+
+/* 指定されたユーザーIDの姿勢を返す */
+UMocapPose* UMocapReceiver::GetMocapPose(const int32 userId)
+{
+	if (userId < 0) return this->CurrentPose;
+	UMocapPose** pPose =  this->Poses.Find(userId);
+	if (pPose == nullptr) {
+		return this->IdentityPose;
+	}
+	else {
+		return *pPose;
 	}
 }

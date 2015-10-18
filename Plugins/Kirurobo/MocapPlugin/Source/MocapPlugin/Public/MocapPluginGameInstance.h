@@ -17,19 +17,49 @@ class UMocapPluginGameInstance : public UGameInstance
 
 public:
 
+	/**
+	* UDPの受信ポート
+	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
-		int32 PortNo = 9763;
+		int32 PortNo = 7001;		// 9763;	// Neuron:7001, MVN:9763
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
-		bool MultiUsers = false;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
+	bool MultiUsers = false;
 
+	/**
+	* MVN から受信したユーザーIDにこの値を加えたものを、IDとして扱う
+	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
+		int32 MvnUserIdOffset = 100;
+
+	/**
+	* Axis Neuron から受信したユーザーIDにこの値を加えたものを、IDとして扱う
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
+		int32 NeuronUserIdOffset = 0;
+
+	/**
+	* Kinect から受信したユーザーIDにこの値を加えたものを、IDとして扱う
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
+		int32 KinectUserIdOffset = 0;
+
+	/**
+	* 実際にUDP受信を取り扱うクラス
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mocap")
 		UMocapReceiver *MocapReceiver;
 
 
+	/**
+	* 接続を開始します。既に接続中の場合は一旦切断されます。
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
 		bool Connect(int32 port = -1);
 
+	/**
+	* 接続を終了します
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
 		void Close();
 

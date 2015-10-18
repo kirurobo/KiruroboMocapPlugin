@@ -3,12 +3,11 @@
 #pragma once
 
 #include "MocapBones.h"
-//#include "CoreUObject.h"
-//#include "PacketReader.generated.h"
+#include "MocapPose.h"
 
 
 /**
- * UDP receiver base class
+ * UDPパケット解釈を担うクラス
  */
 class UPacketReader //: public UObject
 {
@@ -17,15 +16,10 @@ public:
 	~UPacketReader();
 
 protected:
-	int8 BoneNumber = 0;
-
-	/*  初回受信ならtrue。オフセットの取得時に使う */
-	bool IsFirstReceive = true;
+	/* ユーザーID */
+	int32 userId = 0;
 
 	virtual void Initialize();
-
-	/*  関節一つ分を解析 */
-	void ProcessSegment(const uint8* data, const int32 segmentNo);
 
 	/*  floatとして解釈 */
 	float GetFloat(const uint8* data, const int32 index);
@@ -50,17 +44,8 @@ protected:
 
 public:
 
-	/*  受信データ1つ分を解析 */
-	virtual bool Read(const FArrayReaderPtr& data);
-
-	/*  UDPパケットのヘッダを確認 */
-	virtual void ResetOffset();
-
-	TArray<FQuat> lastRotations;
-	TArray<FQuat> BoneRotations;
-	FVector RootPosition = FVector(0, 0, 0);
-	FVector PositionOffset = FVector(0, 0, 0);
-
+	/*  受信データ1つ分を解析してMocapPoseに格納 */
+	virtual bool Read(const FArrayReaderPtr& data, UMocapPose* pose);
 };
 
 

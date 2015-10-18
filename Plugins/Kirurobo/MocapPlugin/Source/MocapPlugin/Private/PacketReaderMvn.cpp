@@ -64,6 +64,59 @@ const uint8 UPacketReaderMvn::ParentBones[] = {
 	(uint8)EMocapMvnBones::LeftFoot,
 };
 
+/**
+* モーキャプで読み込まれないボーン
+*/
+const uint8 UPacketReaderMvn::EmptyBoneIndices [] = {
+	(uint8) EMocapBones::Root,
+	(uint8) EMocapBones::Neck02,
+	(uint8) EMocapBones::LeftThighTwist,
+	(uint8) EMocapBones::LeftCalfTwist,
+	(uint8) EMocapBones::RightThighTwist,
+	(uint8) EMocapBones::RightCalfTwist,
+	(uint8) EMocapBones::LeftLowerArmTwist,
+	(uint8) EMocapBones::LeftUpperArmTwist,
+	(uint8) EMocapBones::LeftThumb01,
+	(uint8) EMocapBones::LeftThumb02,
+	(uint8) EMocapBones::LeftThumb03,
+	(uint8) EMocapBones::LeftInHandIndex,
+	(uint8) EMocapBones::LeftIndex01,
+	(uint8) EMocapBones::LeftIndex02,
+	(uint8) EMocapBones::LeftIndex03,
+	(uint8) EMocapBones::LeftInHandMiddle,
+	(uint8) EMocapBones::LeftMiddle01,
+	(uint8) EMocapBones::LeftMiddle02,
+	(uint8) EMocapBones::LeftMiddle03,
+	(uint8) EMocapBones::LeftInHandRing,
+	(uint8) EMocapBones::LeftRing01,
+	(uint8) EMocapBones::LeftRing02,
+	(uint8) EMocapBones::LeftRing03,
+	(uint8) EMocapBones::LeftInHandPinky,
+	(uint8) EMocapBones::LeftPinky01,
+	(uint8) EMocapBones::LeftPinky02,
+	(uint8) EMocapBones::LeftPinky03,
+	(uint8) EMocapBones::RightLowerArmTwist,
+	(uint8) EMocapBones::RightUpperArmTwist,
+	(uint8) EMocapBones::RightThumb01,
+	(uint8) EMocapBones::RightThumb02,
+	(uint8) EMocapBones::RightThumb03,
+	(uint8) EMocapBones::RightInHandIndex,
+	(uint8) EMocapBones::RightIndex01,
+	(uint8) EMocapBones::RightIndex02,
+	(uint8) EMocapBones::RightIndex03,
+	(uint8) EMocapBones::RightInHandMiddle,
+	(uint8) EMocapBones::RightMiddle01,
+	(uint8) EMocapBones::RightMiddle02,
+	(uint8) EMocapBones::RightMiddle03,
+	(uint8) EMocapBones::RightInHandRing,
+	(uint8) EMocapBones::RightRing01,
+	(uint8) EMocapBones::RightRing02,
+	(uint8) EMocapBones::RightRing03,
+	(uint8) EMocapBones::RightInHandPinky,
+	(uint8) EMocapBones::RightPinky01,
+	(uint8) EMocapBones::RightPinky02,
+	(uint8) EMocapBones::RightPinky03,
+};
 
 UPacketReaderMvn::UPacketReaderMvn() : UPacketReader()
 {
@@ -86,35 +139,38 @@ void UPacketReaderMvn::Initialize()
 	/*  サンプルカウンタ */
 	this->SampleCount = 0;
 
-	/*  初期化 */
-	this->RootPosition = FVector::ZeroVector;
-	this->PositionOffset = FVector::ZeroVector;
-	this->IsFirstReceive = true;
-
-	/*  値を保持する配列を準備 */
-	BoneRotations.Reserve(BoneNumber);
-	lastRotations.Reserve(BoneNumber);
-	for (int i = 0; i < BoneNumber; i++) {
-		BoneRotations.Add(FQuat(0, 0, 0, 1));
-		lastRotations.Add(FQuat(0, 0, 0, 1));
+	/* 元回転の配列を準備 */
+	UEnum* pBones = FindObject<UEnum>(ANY_PACKAGE, TEXT("EMocapBones"), true);
+	int count = pBones->NumEnums();
+	this->rotations.Reserve(count);
+	for (int i = 0; i < count; i++) {
+		this->rotations.Add(FQuat(0, 0, 0, 1));
 	}
 }
 
 /*  一つ分の受信データを解析し、MVNの値ならば格納 */
-bool UPacketReaderMvn::Read(const FArrayReaderPtr& data)
+bool UPacketReaderMvn::Read(const FArrayReaderPtr& data, UMocapPose* pose)
 {
 	if (!CheckHeader(data)) return false;
 
-	const uint8* raw = data->GetData();
+	/* ヘッダーを読んだ時点でユーザーIDが分るので設定 */
+	pose->UserId = this->userId;
 
+	/* 読み込まれないボーンを空にする */
+	for (int i = 0; i < (sizeof(EmptyBoneIndices) / sizeof(EmptyBoneIndices[0])); i++) {
+		pose->BoneRotations[EmptyBoneIndices[i]] = FQuat(0, 0, 0, 1);
+	}
+
+	/* 読込開始 */
+	const uint8* raw = data->GetData();
 	for (int i = 0; i < BoneCount; i++) {
-		ProcessSegment(raw, i);
+		ProcessSegment(raw, i, pose);
 	}
 
 	return true;
 }
 
-void UPacketReaderMvn::ProcessSegment(const uint8* data, const int32 segmentNo)
+void UPacketReaderMvn::ProcessSegment(const uint8* data, const int32 segmentNo, UMocapPose* pose)
 {
 	/*  1関節あたり32バイト＋ヘッダ24バイトが、見るべきインデックスの始点 */
 	int32 index = segmentNo * 32 + 24;
@@ -123,17 +179,10 @@ void UPacketReaderMvn::ProcessSegment(const uint8* data, const int32 segmentNo)
 	int32 num = GetBigEndianInt32(data, index) - 1;
 	if (num < 0 || num >= BoneCount) return;
 
-	/*  関節座標を取得 */
+	/*  最初の関節（Pelvis）ならば関節座標を取得 */
 	if (num == 0) {
 		FVector position = GetPosition(data, index + 4);
-
-		/*  初回受信ならオフセットを記憶 */
-		if (this->IsFirstReceive) {
-			this->PositionOffset = -position;
-			this->IsFirstReceive = false;
-		}
-		this->RootPosition = position + this->PositionOffset;
-
+		pose->OriginalRootPosition = position;
 		//UE_LOG(LogTemp, Log, TEXT("Root position: %f %f %f"), this->RootPosition.X, this->RootPosition.Y, this->RootPosition.Z);
 	}
 
@@ -144,13 +193,13 @@ void UPacketReaderMvn::ProcessSegment(const uint8* data, const int32 segmentNo)
 	uint8 parentIndex = ParentBones[num];
 
 	if (parentIndex != EMocapMvnBones::None) {
-		FQuat localQuat = lastRotations[parentIndex].Inverse() * quat;
-		this->BoneRotations[boneIndex] = localQuat;
-		this->lastRotations[boneIndex] = quat;
+		FQuat localQuat = this->rotations[parentIndex].Inverse() * quat;
+		pose->BoneRotations[boneIndex] = localQuat;
+		this->rotations[boneIndex] = quat;
 	}
 	else {
-		this->BoneRotations[boneIndex] = quat;
-		this->lastRotations[boneIndex] = quat;
+		pose->BoneRotations[boneIndex] = quat;
+		this->rotations[boneIndex] = quat;
 	}
 }
 
@@ -165,11 +214,11 @@ bool UPacketReaderMvn::CheckHeader(const FArrayReaderPtr& data)
 	const uint8* raw = data->GetData();
 	int32 index = 0;
 
-	/*  先頭の文字列を確認 */
+	/*  先頭の文字列を確認（6バイト） */
 	if (raw[0] != 'M' || raw[1] != 'X' || raw[2] != 'T' || raw[3] != 'P' || raw[4] != '0' || raw[5] != '2') return false;
+	index += 6;
 
-	/*  サンプルカウンタを確認 */
-	index = 6;
+	/*  サンプルカウンタを確認（4バイト） */
 	int32 count = GetBigEndianInt32(raw, index);
 	if ((count < this->SampleCount) && ((this->SampleCount - count) <= 15)) {
 		/*  前回のカウンタよりも小さく、それが15フレーム以内ならば古いデータとみなして破棄する。 */
@@ -177,10 +226,23 @@ bool UPacketReaderMvn::CheckHeader(const FArrayReaderPtr& data)
 		return false;
 	}
 	this->SampleCount = count;
+	index += 4;
 
-	/*  セグメント数をチェック */
-	index += 5;
+	/* データグラムカウンタ（1バイト） */
+	index += 1;
+
+	/*  セグメント数（1バイト） */
 	if (raw[index] < BoneCount) return false;
+	index += 1;
+
+	/* タイムコード（4バイト） */
+	index += 4;
+
+	/* アバターID（1バイト） */
+	this->userId = raw[index];
+	index += 1;
+
+	/* 予約領域（7バイト） */
 
 	return true;
 }

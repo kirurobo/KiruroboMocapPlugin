@@ -17,21 +17,20 @@ public:
 	UPacketReaderNeuron();
 	virtual ~UPacketReaderNeuron();
 
-	const static uint8 BoneCount;
-	const static uint8 BoneIndices [];
-	const static uint8 ParentBones [];
+	const static uint8 BoneCount;			/* モーキャプで受信されるボーン数 */
+	const static uint8 BoneIndices[];		/* モーキャプで受信される順番のボーン */
+	//const static uint8 ParentBones [];	/* モーキャプで受信されるボーンの親ボーン */
+	const static uint8 EmptyBoneIndices [];	/* モーキャプでは受信されず、常に空とすべきボーン */
 
 protected:
-
 	int32 SampleCount;
-	TArray<FQuat> lastRotations;
 	bool hasDisplacement;
 	bool hasReference;
 
 	void Initialize();
 
 	/*  関節一つ分を解析 */
-	void ProcessSegment(const uint8* data, const int32 segmentNo, const int32 index);
+	void ProcessSegment(const uint8* data, const int32 segmentNo, const int32 index, UMocapPose* pose);
 
 	FVector GetPosition(const uint8* data, const int32 index);
 
@@ -43,7 +42,7 @@ protected:
 public:
 
 	/*  受信データ1つ分を解析 */
-	bool Read(const FArrayReaderPtr& data);
+	bool Read(const FArrayReaderPtr& data, UMocapPose* pose);
 };
 
 

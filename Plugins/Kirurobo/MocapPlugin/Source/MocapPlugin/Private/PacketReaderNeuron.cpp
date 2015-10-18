@@ -72,71 +72,88 @@ const uint8 UPacketReaderNeuron::BoneIndices [] = {
 	(uint8) EMocapNeuronBones::LeftHandPinky3,
 };
 
-/**
-* パケットでの登場順と親ボーンの対応付け
-*/
-const uint8 UPacketReaderNeuron::ParentBones [] = {
-	(uint8) EMocapNeuronBones::None,
-	(uint8) EMocapNeuronBones::Hips,
-	(uint8) EMocapNeuronBones::RightUpLeg,
-	(uint8) EMocapNeuronBones::RightLeg,
-	(uint8) EMocapNeuronBones::Hips,
-	(uint8) EMocapNeuronBones::LeftUpLeg,
-	(uint8) EMocapNeuronBones::LeftLeg,
-	(uint8) EMocapNeuronBones::Hips,
-	(uint8) EMocapNeuronBones::Spine,
-	(uint8) EMocapNeuronBones::Spine1,
-	(uint8) EMocapNeuronBones::Spine2,
-	(uint8) EMocapNeuronBones::Spine3,
-	(uint8) EMocapNeuronBones::Neck,
-	(uint8) EMocapNeuronBones::Spine3,
-	(uint8) EMocapNeuronBones::RightShoulder,
-	(uint8) EMocapNeuronBones::RightArm,
-	(uint8) EMocapNeuronBones::RightForeArm,
-	(uint8) EMocapNeuronBones::RightHand,
-	(uint8) EMocapNeuronBones::RightHandThumb1,
-	(uint8) EMocapNeuronBones::RightHandThumb2,
-	(uint8) EMocapNeuronBones::RightHand,
-	(uint8) EMocapNeuronBones::RightInHandIndex,
-	(uint8) EMocapNeuronBones::RightHandIndex1,
-	(uint8) EMocapNeuronBones::RightHandIndex2,
-	(uint8) EMocapNeuronBones::RightHand,
-	(uint8) EMocapNeuronBones::RightInHandMiddle,
-	(uint8) EMocapNeuronBones::RightHandMiddle1,
-	(uint8) EMocapNeuronBones::RightHandMiddle2,
-	(uint8) EMocapNeuronBones::RightHand,
-	(uint8) EMocapNeuronBones::RightInHandRing,
-	(uint8) EMocapNeuronBones::RightHandRing1,
-	(uint8) EMocapNeuronBones::RightHandRing2,
-	(uint8) EMocapNeuronBones::RightHand,
-	(uint8) EMocapNeuronBones::RightInHandPinky,
-	(uint8) EMocapNeuronBones::RightHandPinky1,
-	(uint8) EMocapNeuronBones::RightHandPinky2,
-	(uint8) EMocapNeuronBones::Spine3,
-	(uint8) EMocapNeuronBones::LeftShoulder,
-	(uint8) EMocapNeuronBones::LeftArm,
-	(uint8) EMocapNeuronBones::LeftForeArm,
-	(uint8) EMocapNeuronBones::LeftHand,
-	(uint8) EMocapNeuronBones::LeftHandThumb1,
-	(uint8) EMocapNeuronBones::LeftHandThumb2,
-	(uint8) EMocapNeuronBones::LeftHand,
-	(uint8) EMocapNeuronBones::LeftInHandIndex,
-	(uint8) EMocapNeuronBones::LeftHandIndex1,
-	(uint8) EMocapNeuronBones::LeftHandIndex2,
-	(uint8) EMocapNeuronBones::LeftHand,
-	(uint8) EMocapNeuronBones::LeftInHandMiddle,
-	(uint8) EMocapNeuronBones::LeftHandMiddle1,
-	(uint8) EMocapNeuronBones::LeftHandMiddle2,
-	(uint8) EMocapNeuronBones::LeftHand,
-	(uint8) EMocapNeuronBones::LeftInHandRing,
-	(uint8) EMocapNeuronBones::LeftHandRing1,
-	(uint8) EMocapNeuronBones::LeftHandRing2,
-	(uint8) EMocapNeuronBones::LeftHand,
-	(uint8) EMocapNeuronBones::LeftInHandPinky,
-	(uint8) EMocapNeuronBones::LeftHandPinky1,
-	(uint8) EMocapNeuronBones::LeftHandPinky2,
-};
+///**
+//* パケットでの登場順と親ボーンの対応付け
+//*/
+//const uint8 UPacketReaderNeuron::ParentBones [] = {
+//	(uint8) EMocapNeuronBones::None,
+//	(uint8) EMocapNeuronBones::Hips,
+//	(uint8) EMocapNeuronBones::RightUpLeg,
+//	(uint8) EMocapNeuronBones::RightLeg,
+//	(uint8) EMocapNeuronBones::Hips,
+//	(uint8) EMocapNeuronBones::LeftUpLeg,
+//	(uint8) EMocapNeuronBones::LeftLeg,
+//	(uint8) EMocapNeuronBones::Hips,
+//	(uint8) EMocapNeuronBones::Spine,
+//	(uint8) EMocapNeuronBones::Spine1,
+//	(uint8) EMocapNeuronBones::Spine2,
+//	(uint8) EMocapNeuronBones::Spine3,
+//	(uint8) EMocapNeuronBones::Neck,
+//	(uint8) EMocapNeuronBones::Spine3,
+//	(uint8) EMocapNeuronBones::RightShoulder,
+//	(uint8) EMocapNeuronBones::RightArm,
+//	(uint8) EMocapNeuronBones::RightForeArm,
+//	(uint8) EMocapNeuronBones::RightHand,
+//	(uint8) EMocapNeuronBones::RightHandThumb1,
+//	(uint8) EMocapNeuronBones::RightHandThumb2,
+//	(uint8) EMocapNeuronBones::RightHand,
+//	(uint8) EMocapNeuronBones::RightInHandIndex,
+//	(uint8) EMocapNeuronBones::RightHandIndex1,
+//	(uint8) EMocapNeuronBones::RightHandIndex2,
+//	(uint8) EMocapNeuronBones::RightHand,
+//	(uint8) EMocapNeuronBones::RightInHandMiddle,
+//	(uint8) EMocapNeuronBones::RightHandMiddle1,
+//	(uint8) EMocapNeuronBones::RightHandMiddle2,
+//	(uint8) EMocapNeuronBones::RightHand,
+//	(uint8) EMocapNeuronBones::RightInHandRing,
+//	(uint8) EMocapNeuronBones::RightHandRing1,
+//	(uint8) EMocapNeuronBones::RightHandRing2,
+//	(uint8) EMocapNeuronBones::RightHand,
+//	(uint8) EMocapNeuronBones::RightInHandPinky,
+//	(uint8) EMocapNeuronBones::RightHandPinky1,
+//	(uint8) EMocapNeuronBones::RightHandPinky2,
+//	(uint8) EMocapNeuronBones::Spine3,
+//	(uint8) EMocapNeuronBones::LeftShoulder,
+//	(uint8) EMocapNeuronBones::LeftArm,
+//	(uint8) EMocapNeuronBones::LeftForeArm,
+//	(uint8) EMocapNeuronBones::LeftHand,
+//	(uint8) EMocapNeuronBones::LeftHandThumb1,
+//	(uint8) EMocapNeuronBones::LeftHandThumb2,
+//	(uint8) EMocapNeuronBones::LeftHand,
+//	(uint8) EMocapNeuronBones::LeftInHandIndex,
+//	(uint8) EMocapNeuronBones::LeftHandIndex1,
+//	(uint8) EMocapNeuronBones::LeftHandIndex2,
+//	(uint8) EMocapNeuronBones::LeftHand,
+//	(uint8) EMocapNeuronBones::LeftInHandMiddle,
+//	(uint8) EMocapNeuronBones::LeftHandMiddle1,
+//	(uint8) EMocapNeuronBones::LeftHandMiddle2,
+//	(uint8) EMocapNeuronBones::LeftHand,
+//	(uint8) EMocapNeuronBones::LeftInHandRing,
+//	(uint8) EMocapNeuronBones::LeftHandRing1,
+//	(uint8) EMocapNeuronBones::LeftHandRing2,
+//	(uint8) EMocapNeuronBones::LeftHand,
+//	(uint8) EMocapNeuronBones::LeftInHandPinky,
+//	(uint8) EMocapNeuronBones::LeftHandPinky1,
+//	(uint8) EMocapNeuronBones::LeftHandPinky2,
+//};
 
+/**
+* モーキャプでは読み込まれないボーン
+*/
+const uint8 UPacketReaderNeuron::EmptyBoneIndices [] = {
+	(uint8) EMocapBones::Root,
+	(uint8) EMocapBones::Neck02,
+	(uint8) EMocapBones::LeftThighTwist,
+	(uint8) EMocapBones::LeftCalfTwist,
+	(uint8) EMocapBones::LeftBall,
+	(uint8) EMocapBones::RightThighTwist,
+	(uint8) EMocapBones::RightCalfTwist,
+	(uint8) EMocapBones::RightBall,
+	(uint8) EMocapBones::LeftLowerArmTwist,
+	(uint8) EMocapBones::LeftUpperArmTwist,
+	(uint8) EMocapBones::RightLowerArmTwist,
+	(uint8) EMocapBones::RightUpperArmTwist,
+};
 
 UPacketReaderNeuron::UPacketReaderNeuron() : UPacketReader()
 {
@@ -157,26 +174,22 @@ UPacketReaderNeuron::~UPacketReaderNeuron()
 void UPacketReaderNeuron::Initialize()
 {
 	this->SampleCount = 0;
-
-	/*  初期化 */
-	this->RootPosition = FVector::ZeroVector;
-	this->PositionOffset = FVector::ZeroVector;
-	this->IsFirstReceive = true;
-
-	/*  値を保持する配列を準備 */
-	BoneRotations.Reserve(BoneNumber);
-	lastRotations.Reserve(BoneNumber);
-	for (int i = 0; i < BoneNumber; i++) {
-		BoneRotations.Add(FQuat(0, 0, 0, 1));
-		lastRotations.Add(FQuat(0, 0, 0, 1));
-	}
 }
 
 /*  一つ分の受信データを解析し、AXIS Neuron の BVH データならば格納 */
-bool UPacketReaderNeuron::Read(const FArrayReaderPtr& data)
+bool UPacketReaderNeuron::Read(const FArrayReaderPtr& data, UMocapPose* pose)
 {
 	if (!CheckHeader(data)) return false;
 
+	/* ヘッダーを読んだ時点でユーザーIDが分るので設定 */
+	pose->UserId = this->userId;
+
+	/* 読み込まれないボーンを空にする */
+	for (int i = 0; i < (sizeof(EmptyBoneIndices) / sizeof(EmptyBoneIndices[0])); i++) {
+		pose->BoneRotations[EmptyBoneIndices[i]] = FQuat(0, 0, 0, 1);
+	}
+
+	/* 読込開始 */
 	const uint8* raw = data->GetData();
 	int index = 64;
 	
@@ -185,33 +198,25 @@ bool UPacketReaderNeuron::Read(const FArrayReaderPtr& data)
 
 	/*  最初はルート位置が届く */
 	FVector position = GetPosition(raw, index);
+	pose->OriginalRootPosition = position;
 	index += 12;
-
-	/*  初回受信ならオフセットを記憶 */
-	if (this->IsFirstReceive) {
-		this->PositionOffset = -position;
-		this->IsFirstReceive = false;
-	}
-	this->RootPosition = position + this->PositionOffset;
 
 	/*  各関節の角度 */
 	for (int i = 0; i < BoneCount; i++) {
-		ProcessSegment(raw, i, index);
+		ProcessSegment(raw, i, index, pose);
 		index += (this->hasDisplacement ? 24 : 12);
 	}
 
 	return true;
 }
 
-void UPacketReaderNeuron::ProcessSegment(const uint8* data, const int32 segmentNo, const int32 index)
+/* 一関節分の読込 */
+void UPacketReaderNeuron::ProcessSegment(const uint8* data, const int32 segmentNo, const int32 index, UMocapPose* pose)
 {
 	int32 num = segmentNo;
 	uint8 boneIndex = this->BoneIndices[num];
-
 	FQuat quat = GetQuaternion(data, index);
-
-	this->BoneRotations[boneIndex] = quat;
-	this->lastRotations[boneIndex] = quat;
+	pose->BoneRotations[boneIndex] = quat;
 }
 
 /*  扱えるMVNのデータかヘッダを確認 */
@@ -243,7 +248,7 @@ bool UPacketReaderNeuron::CheckHeader(const FArrayReaderPtr& data)
 	index += 4;
 
 	/*  アバターID */
-	int32 userId = GetUInt32(raw, index);
+	this->userId = GetUInt32(raw, index);
 	index += 4;
 
 	/*  ヘッダーの終了を確認 */

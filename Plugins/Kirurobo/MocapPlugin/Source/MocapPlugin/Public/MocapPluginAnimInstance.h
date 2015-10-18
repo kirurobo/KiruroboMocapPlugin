@@ -5,6 +5,7 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimNodeSpaceConversions.h"
 #include "MocapBones.h"
+#include "MocapBoneTuple.h"
 #include "MocapReceiver.h"
 #include "MocapPluginGameInstance.h"
 #include "MocapPluginAnimInstance.generated.h"
@@ -80,18 +81,16 @@ public:
 		bool UseRootPosition = true;
 
 	/**
-	* 動かすボーン名を順に指定します。
-	* Mocap Bones の順番と対応させてください。
+	* モデルとMocapPlugin間のボーン名対応を指定します
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
-		TArray<FName> BoneNames;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mocap")
+		TArray<FMocapBoneTuple> BoneMap;
 
-	/**
-	* 割り当てるボーンを順に指定します。
-	* Bone Names の順番と対応させてください。
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
-		TArray<TEnumAsByte<EMocapBones::Type>> MocapBones;
+	///**
+	//* 自動的にT-ポーズに調整するか
+	//*/
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
+	//	bool EnforceTPose = true;
 
 	/**
 	* モデルの位置を取得する
@@ -100,12 +99,33 @@ public:
 		FVector RootPosition = FVector(0, 0, 0);
 
 
+	/**
+	* モーキャプで受信されたボーンの姿勢を取得します。
+	* 各姿勢は親ボーンに対する相対姿勢です。
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
 		FRotator GetBoneRotator(EMocapBones::Type bone) const;
 
+	/**
+	* 基準座標を取得します。
+	* モーキャプからの値に最初の位置を基準としたオフセットを加えたものです。
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Mocap")
+		FVector GetRootPosition() const;
+
+	///**
+	//* オフセットを取得します。
+	//*/
+	//UFUNCTION(BlueprintCallable, Category = "Mocap")
+	//	FVector GetPositionOffset() const;
+
+
+	/**
+	* 本プラグインのボーン名を配列のインデックス番号にキャストします
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
 		static uint8 GetBoneIndex(EMocapBones::Type bone);
 
-	UFUNCTION(BlueprintCallable, Category = "Mocap")
-		FComponentSpacePoseLink ApplyMocapPose(FComponentSpacePoseLink pose) const;
+	//UFUNCTION(BlueprintCallable, Category = "Mocap")
+	//	FComponentSpacePoseLink ApplyMocapPose(FComponentSpacePoseLink pose) const;
 };
