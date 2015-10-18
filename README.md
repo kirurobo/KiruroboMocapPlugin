@@ -1,6 +1,14 @@
 # KiruroboMocapPlugin
 A plug-in for Unreal Engine 4 to receive real-time motion from MVN and Perception Neuron.
 
+## 変更点
+
+### v.1.0.0
+
++ 複数人分受信した際にユーザーIDで区別して動くようにしました。
++ Perception Neuron のユーザーの方がそのうち多くなりそうなので、デフォルトポートを7001としました。
+
+---
 
 ## 動作例
 
