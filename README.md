@@ -17,6 +17,9 @@ A plug-in for Unreal Engine 4 to receive real-time motion from MVN and Perceptio
 
 ## 動作例
 
+[![Axis Neuron と MVN Studio からの同時受信](http://img.youtube.com/vi/Y94C3QmGjSY/0.jpg)](https://www.youtube.com/watch?v=Y94C3QmGjSY)  
+[Axis Neuron と MVN Studio からの同時受信の例](https://www.youtube.com/watch?v=Y94C3QmGjSY)
+
 [![Percption Neuron](https://v.cdn.vine.co/r/videos/5BA73197D81257013932804706304_40c8f698f87.0.2.7226271563668120992.mp4.jpg)](https://vine.co/v/eUY5z3Zi2VP)  
 [Perception Neuron （Axis Neuron） の例](https://vine.co/v/eUY5z3Zi2VP)
 
