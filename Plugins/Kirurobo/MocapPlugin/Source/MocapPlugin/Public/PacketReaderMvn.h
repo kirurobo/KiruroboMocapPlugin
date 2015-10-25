@@ -9,13 +9,13 @@
  * MVN Quaternion protocol reader
  */
 //UCLASS(ClassGroup = MocapPlugin)
-class UPacketReaderMvn : public UPacketReader
+class FPacketReaderMvn : public FPacketReader
 {
 	//GENERATED_UCLASS_BODY()
 
 public:
-	UPacketReaderMvn();
-	virtual ~UPacketReaderMvn();
+	FPacketReaderMvn();
+	virtual ~FPacketReaderMvn();
 
 	const static uint8 BoneCount;			/* モーキャプで受信されるボーン数 */
 	const static uint8 BoneIndices [];		/* モーキャプで受信される順番のボーン */

@@ -50,19 +50,19 @@ protected:
 	/**
 	* 各ボーンの姿勢が入る配列
 	*/
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mocap")
+	UPROPERTY(BlueprintReadOnly, Category = "Mocap")
 		TArray<FQuat> BoneRotations;
 
 	/**
 	* MocapPluginGameInstanceが見つかればここに入る
 	*/
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mocap")
+	UPROPERTY(BlueprintReadOnly, Category = "Mocap")
 		UMocapPluginGameInstance *MocapPluginGameInstance;
 
 	/**
 	* MocapReceiverが見つかればここに入る
 	*/
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mocap")
+	UPROPERTY(BlueprintReadOnly, Category = "Mocap")
 		UMocapReceiver *MocapReceiver;
 
 public:

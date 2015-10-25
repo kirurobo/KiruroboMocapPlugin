@@ -4,12 +4,12 @@
 #include "PacketReaderMvn.h"
 
 
-const uint8 UPacketReaderMvn::BoneCount = 23;
+const uint8 FPacketReaderMvn::BoneCount = 23;
 
 /**
 * パケットでの登場順とボーンの対応付け
 */
-const uint8 UPacketReaderMvn::BoneIndices[] = {
+const uint8 FPacketReaderMvn::BoneIndices[] = {
 	(uint8)EMocapMvnBones::Pelvis,
 	(uint8)EMocapMvnBones::L5,
 	(uint8)EMocapMvnBones::L3,
@@ -38,7 +38,7 @@ const uint8 UPacketReaderMvn::BoneIndices[] = {
 /**
 * パケットでの登場順と親ボーンの対応付け
 */
-const uint8 UPacketReaderMvn::ParentBones[] = {
+const uint8 FPacketReaderMvn::ParentBones[] = {
 	(uint8)EMocapMvnBones::None,
 	(uint8)EMocapMvnBones::Pelvis,
 	(uint8)EMocapMvnBones::L5,
@@ -67,7 +67,7 @@ const uint8 UPacketReaderMvn::ParentBones[] = {
 /**
 * モーキャプで読み込まれないボーン
 */
-const uint8 UPacketReaderMvn::EmptyBoneIndices [] = {
+const uint8 FPacketReaderMvn::EmptyBoneIndices [] = {
 	(uint8) EMocapBones::Root,
 	(uint8) EMocapBones::Neck02,
 	(uint8) EMocapBones::LeftThighTwist,
@@ -118,23 +118,23 @@ const uint8 UPacketReaderMvn::EmptyBoneIndices [] = {
 	(uint8) EMocapBones::RightPinky03,
 };
 
-UPacketReaderMvn::UPacketReaderMvn() : UPacketReader()
+FPacketReaderMvn::FPacketReaderMvn() : FPacketReader()
 {
 	Initialize();
 }
 
-UPacketReaderMvn::~UPacketReaderMvn()
+FPacketReaderMvn::~FPacketReaderMvn()
 {
 }
 
-//UPacketReaderMvn::UPacketReaderMvn(const FObjectInitializer& ObjectInitializer)
+//FPacketReaderMvn::FPacketReaderMvn(const FObjectInitializer& ObjectInitializer)
 //	: Super(ObjectInitializer)
 //{
 //	Initialize();
 //}
 
 // Sets default values
-void UPacketReaderMvn::Initialize()
+void FPacketReaderMvn::Initialize()
 {
 	/*  サンプルカウンタ */
 	this->SampleCount = 0;
@@ -149,7 +149,7 @@ void UPacketReaderMvn::Initialize()
 }
 
 /*  一つ分の受信データを解析し、MVNの値ならば格納 */
-bool UPacketReaderMvn::Read(const FArrayReaderPtr& data, UMocapPose* pose)
+bool FPacketReaderMvn::Read(const FArrayReaderPtr& data, UMocapPose* pose)
 {
 	if (!CheckHeader(data)) return false;
 
@@ -170,7 +170,7 @@ bool UPacketReaderMvn::Read(const FArrayReaderPtr& data, UMocapPose* pose)
 	return true;
 }
 
-void UPacketReaderMvn::ProcessSegment(const uint8* data, const int32 segmentNo, UMocapPose* pose)
+void FPacketReaderMvn::ProcessSegment(const uint8* data, const int32 segmentNo, UMocapPose* pose)
 {
 	/*  1関節あたり32バイト＋ヘッダ24バイトが、見るべきインデックスの始点 */
 	int32 index = segmentNo * 32 + 24;
@@ -206,7 +206,7 @@ void UPacketReaderMvn::ProcessSegment(const uint8* data, const int32 segmentNo, 
 /**
 * 扱えるMVNのデータかヘッダを確認
 */
-bool UPacketReaderMvn::CheckHeader(const FArrayReaderPtr& data)
+bool FPacketReaderMvn::CheckHeader(const FArrayReaderPtr& data)
 {
 	/*  ヘッダ部の長さ未満なら不正として終了 */
 	if (data->Num() < 24) return false;
@@ -248,7 +248,7 @@ bool UPacketReaderMvn::CheckHeader(const FArrayReaderPtr& data)
 }
 
 /*  MVN座標系のクォータニオンをUEのクォータニオンとして返す */
-FQuat UPacketReaderMvn::GetQuaternion(const uint8* data, const int32 index)
+FQuat FPacketReaderMvn::GetQuaternion(const uint8* data, const int32 index)
 {
 	return FQuat(
 		-GetBigEndianFloat(data, index + 8),
@@ -259,7 +259,7 @@ FQuat UPacketReaderMvn::GetQuaternion(const uint8* data, const int32 index)
 }
 
 /*  MVNの座標をUEの座標系で返す */
-FVector UPacketReaderMvn::GetPosition(const uint8* data, const int32 index)
+FVector FPacketReaderMvn::GetPosition(const uint8* data, const int32 index)
 {
 	return FVector(
 		GetBigEndianFloat(data, index + 4) * 100.0,		/*  [m] を [cm] にする */

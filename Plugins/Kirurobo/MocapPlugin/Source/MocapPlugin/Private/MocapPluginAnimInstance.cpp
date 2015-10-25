@@ -204,16 +204,16 @@ bool UMocapPluginAnimInstance::NativeEvaluateAnimation(FPoseContext& Output)
 	/* UE 4.9 以降の場合。 FPoseContext の中身が変わり、そのまま使えなくなった。 */
 
 	/* Rootからの親ボーン姿勢を計算。子より必ず親の番号が小さくなければならない。 */
-	TArray<FQuat> parentRotations;
-	parentRotations.Reserve(Output.Pose.GetNumBones());
-	for (int i = 0; i < Output.Pose.GetNumBones(); i++) {
+	const static int maxBones = 255;
+	FQuat parentRotations[maxBones];
+	for (int i = 0; i < Output.Pose.GetNumBones() && i < maxBones; i++) {
 		FCompactPoseBoneIndex index(i);
 		FQuat rotation = Output.Pose[index].GetRotation();
 		FCompactPoseBoneIndex parentBoneIndex = Output.Pose.GetParentBoneIndex(index);
-		if (parentBoneIndex >= 0 && parentBoneIndex < parentRotations.Num()) {
+		if (parentBoneIndex >= 0 && parentBoneIndex < parentRotations.Num() && parentBoneIndex < maxBones) {
 			rotation = parentRotations[parentBoneIndex.GetInt()] * rotation;
 		}
-		parentRotations.Add(rotation);
+		parentRotations[i] = rotation;
 	}
 
 	/* 各ボーンに受信された変形を反映 */
@@ -256,15 +256,15 @@ bool UMocapPluginAnimInstance::NativeEvaluateAnimation(FPoseContext& Output)
 	pose.AllocateLocalPoses(RequiredBones, Output.Pose);
 
 	/* Rootからの親ボーン姿勢を計算。子より必ず親の番号が小さくなければならない。 */
-	TArray<FQuat> parentRotations;
-	parentRotations.Reserve(pose.Bones.Num());
-	for (int i = 0; i < pose.Bones.Num(); i++) {
+	const static int maxBones = 255;
+	FQuat parentRotations[maxBones];
+	for (int i = 0; i < pose.Bones.Num() && i < maxBones; i++) {
 		FQuat rotation = pose.Bones[i].GetRotation();
 		int32 parentBoneIndex = pose.GetParentBoneIndex(i);
-		if (parentBoneIndex >= 0 && parentBoneIndex < parentRotations.Num()) {
+		if (parentBoneIndex >= 0 && parentBoneIndex < maxBones) {
 			rotation = parentRotations[parentBoneIndex] * rotation;
 		}
-		parentRotations.Add(rotation);
+		parentRotations[i] = rotation;
 	}
 
 	/* 各ボーンに受信された変形を反映 */
@@ -298,6 +298,7 @@ bool UMocapPluginAnimInstance::NativeEvaluateAnimation(FPoseContext& Output)
 	}
 
 	pose.ConvertToLocalPoses(Output.Pose);
+
 #endif
 
 	return true;

@@ -9,7 +9,7 @@
  * MVN Quaternion protocol reader
  */
 //UCLASS(ClassGroup = MocapPlugin)
-class UPacketReaderKinect : public UPacketReader
+class FPacketReaderKinect : public FPacketReader
 {
 	//GENERATED_UCLASS_BODY()
 };

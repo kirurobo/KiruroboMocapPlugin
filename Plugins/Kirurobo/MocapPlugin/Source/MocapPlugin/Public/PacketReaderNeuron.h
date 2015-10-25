@@ -9,13 +9,13 @@
  * AXIS Neuron BVH protocol reader
  */
 //UCLASS(ClassGroup = MocapPlugin)
-class UPacketReaderNeuron : public UPacketReader
+class FPacketReaderNeuron : public FPacketReader
 {
 	//GENERATED_UCLASS_BODY()
 
 public:
-	UPacketReaderNeuron();
-	virtual ~UPacketReaderNeuron();
+	FPacketReaderNeuron();
+	virtual ~FPacketReaderNeuron();
 
 	const static uint8 BoneCount;			/* モーキャプで受信されるボーン数 */
 	const static uint8 BoneIndices[];		/* モーキャプで受信される順番のボーン */

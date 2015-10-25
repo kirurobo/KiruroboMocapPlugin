@@ -40,9 +40,9 @@ bool UMocapReceiver::Connect()
 		CurrentPose = NewObject<UMocapPose>();
 
 		/*  パケット解釈部 */
-		packetReaderMvn = new UPacketReaderMvn();
-		//packetReaderKinect = new UPacketReaderKinect();
-		packetReaderNeuron = new UPacketReaderNeuron();
+		packetReaderMvn = new FPacketReaderMvn();
+		//packetReaderKinect = new FPacketReaderKinect();
+		packetReaderNeuron = new FPacketReaderNeuron();
 
 		/* UDP受信を開始 */
 		m_Receiver = new FUdpSocketReceiver(m_Socket, FTimespan(0, 0, 1), TEXT("Mocap UDP receiver"));
@@ -69,11 +69,11 @@ void UMocapReceiver::Close()
 		m_Socket = NULL;
 	}
 	if (packetReaderMvn != NULL) {
-		delete (UPacketReaderMvn*)packetReaderMvn;
+		delete (FPacketReaderMvn*)packetReaderMvn;
 		packetReaderMvn = NULL;
 	}
 	if (packetReaderNeuron != NULL) {
-		delete (UPacketReaderNeuron*)packetReaderNeuron;
+		delete (FPacketReaderNeuron*)packetReaderNeuron;
 		packetReaderNeuron = NULL;
 	}
 }
@@ -96,16 +96,17 @@ void UMocapReceiver::UdpReceivedCallback(const FArrayReaderPtr& data, const FIPv
 	if (received) {
 		int userId = this->CurrentPose->UserId;
 
-		UMocapPose** pPose = this->Poses.Find(userId);
+		UMocapPose** pPose = this->PoseMap.Find(userId);
 		if (pPose == nullptr) {
 			/*  初回受信。現在の位置が原点となるようオフセットを設定 */
 			//this->CurrentPose->PositionOffset = -this->CurrentPose->OriginalRootPosition;
 			UMocapPose* pose = this->CurrentPose->Clone();
 			pose->PositionOffset = -pose->OriginalRootPosition;
-			if (this->Poses.Num() < 1) {
+			if (this->PoseMap.Num() < 1) {
 				this->CurrentPose->PositionOffset = pose->PositionOffset;
 			}
-			this->Poses.Add(userId, pose);
+			this->Poses.Add(pose);				/* GCで削除されるのを防ぐため、こちらにも登録 */
+			this->PoseMap.Add(userId, pose);
 		}
 		else {
 			/* 既に受信されたユーザーならば値の複製のみ */
@@ -118,7 +119,7 @@ void UMocapReceiver::UdpReceivedCallback(const FArrayReaderPtr& data, const FIPv
 UMocapPose* UMocapReceiver::GetMocapPose(const int32 userId)
 {
 	if (userId < 0) return this->CurrentPose;
-	UMocapPose** pPose =  this->Poses.Find(userId);
+	UMocapPose** pPose =  this->PoseMap.Find(userId);
 	if (pPose == nullptr) {
 		return this->IdentityPose;
 	}

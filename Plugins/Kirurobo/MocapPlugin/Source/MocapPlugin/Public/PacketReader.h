@@ -9,11 +9,11 @@
 /**
  * UDPパケット解釈を担うクラス
  */
-class UPacketReader //: public UObject
+class FPacketReader //: public UObject
 {
 public:
-	UPacketReader();
-	~UPacketReader();
+	FPacketReader();
+	~FPacketReader();
 
 protected:
 	/* ユーザーID */

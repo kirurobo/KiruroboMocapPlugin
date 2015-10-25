@@ -4,27 +4,27 @@
 #include "PacketReader.h"
 
 
-//UPacketReader::UPacketReader(const FObjectInitializer& ObjectInitializer)
+//FPacketReader::FPacketReader(const FObjectInitializer& ObjectInitializer)
 //	: Super(ObjectInitializer)
 //{
 //	Initialize();
 //}
 
-UPacketReader::UPacketReader()
+FPacketReader::FPacketReader()
 {
 	Initialize();
 }
 
-UPacketReader::~UPacketReader()
+FPacketReader::~FPacketReader()
 {
 }
 
-void UPacketReader::Initialize()
+void FPacketReader::Initialize()
 {
 }
 
 /*  一つ分の受信データを解析し、正しければ格納 */
-bool UPacketReader::Read(const FArrayReaderPtr& data, UMocapPose* pose)
+bool FPacketReader::Read(const FArrayReaderPtr& data, UMocapPose* pose)
 {
 	if (!CheckHeader(data)) return false;
 
@@ -34,14 +34,14 @@ bool UPacketReader::Read(const FArrayReaderPtr& data, UMocapPose* pose)
 }
 
 /*  扱えるデータかヘッダを確認 */
-bool UPacketReader::CheckHeader(const FArrayReaderPtr& data)
+bool FPacketReader::CheckHeader(const FArrayReaderPtr& data)
 {
 	return false;
 }
 
 //------------------------------------------------------------------------------------
 /*  整数として返す */
-int32 UPacketReader::GetInt32(const uint8* data, const int32 index)
+int32 FPacketReader::GetInt32(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	int32* pInt;
@@ -54,7 +54,7 @@ int32 UPacketReader::GetInt32(const uint8* data, const int32 index)
 }
 
 /*  整数として返す */
-uint32 UPacketReader::GetUInt32(const uint8* data, const int32 index)
+uint32 FPacketReader::GetUInt32(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	uint32* pInt;
@@ -66,7 +66,7 @@ uint32 UPacketReader::GetUInt32(const uint8* data, const int32 index)
 	return *pInt;
 }
 
-uint16 UPacketReader::GetUInt16(const uint8* data, const int32 index)
+uint16 FPacketReader::GetUInt16(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	uint16* pData;
@@ -79,7 +79,7 @@ uint16 UPacketReader::GetUInt16(const uint8* data, const int32 index)
 }
 
 /*  実数として返す */
-float UPacketReader::GetFloat(const uint8* data, const int32 index)
+float FPacketReader::GetFloat(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	float* pFloat;
@@ -92,7 +92,7 @@ float UPacketReader::GetFloat(const uint8* data, const int32 index)
 }
 
 /*  ビッグエンディアンをリトルエンディアンに直し、整数として返す */
-int32 UPacketReader::GetBigEndianInt32(const uint8* data, const int32 index)
+int32 FPacketReader::GetBigEndianInt32(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	int32* pInt;
@@ -105,7 +105,7 @@ int32 UPacketReader::GetBigEndianInt32(const uint8* data, const int32 index)
 }
 
 /*  ビッグエンディアンをリトルエンディアンに直し、実数として返す */
-float UPacketReader::GetBigEndianFloat(const uint8* data, const int32 index)
+float FPacketReader::GetBigEndianFloat(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	float* pFloat;

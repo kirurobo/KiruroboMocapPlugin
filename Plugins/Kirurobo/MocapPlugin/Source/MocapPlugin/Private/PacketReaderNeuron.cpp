@@ -5,12 +5,12 @@
 #include "Runtime/Launch/Resources/Version.h"
 
 
-const uint8 UPacketReaderNeuron::BoneCount = 59;
+const uint8 FPacketReaderNeuron::BoneCount = 59;
 
 /**
 * パケットでの登場順とボーンの対応付け
 */
-const uint8 UPacketReaderNeuron::BoneIndices [] = {
+const uint8 FPacketReaderNeuron::BoneIndices [] = {
 	(uint8) EMocapNeuronBones::Hips,
 	(uint8) EMocapNeuronBones::RightUpLeg,
 	(uint8) EMocapNeuronBones::RightLeg,
@@ -75,7 +75,7 @@ const uint8 UPacketReaderNeuron::BoneIndices [] = {
 ///**
 //* パケットでの登場順と親ボーンの対応付け
 //*/
-//const uint8 UPacketReaderNeuron::ParentBones [] = {
+//const uint8 FPacketReaderNeuron::ParentBones [] = {
 //	(uint8) EMocapNeuronBones::None,
 //	(uint8) EMocapNeuronBones::Hips,
 //	(uint8) EMocapNeuronBones::RightUpLeg,
@@ -140,7 +140,7 @@ const uint8 UPacketReaderNeuron::BoneIndices [] = {
 /**
 * モーキャプでは読み込まれないボーン
 */
-const uint8 UPacketReaderNeuron::EmptyBoneIndices [] = {
+const uint8 FPacketReaderNeuron::EmptyBoneIndices [] = {
 	(uint8) EMocapBones::Root,
 	(uint8) EMocapBones::Neck02,
 	(uint8) EMocapBones::LeftThighTwist,
@@ -155,29 +155,29 @@ const uint8 UPacketReaderNeuron::EmptyBoneIndices [] = {
 	(uint8) EMocapBones::RightUpperArmTwist,
 };
 
-UPacketReaderNeuron::UPacketReaderNeuron() : UPacketReader()
+FPacketReaderNeuron::FPacketReaderNeuron() : FPacketReader()
 {
 	Initialize();
 }
 
-UPacketReaderNeuron::~UPacketReaderNeuron()
+FPacketReaderNeuron::~FPacketReaderNeuron()
 {
 }
 
-//UPacketReaderNeuron::UPacketReaderNeuron(const FObjectInitializer& ObjectInitializer)
+//FPacketReaderNeuron::FPacketReaderNeuron(const FObjectInitializer& ObjectInitializer)
 //	: Super(ObjectInitializer)
 //{
 //	Initialize();
 //}
 
 // Sets default values
-void UPacketReaderNeuron::Initialize()
+void FPacketReaderNeuron::Initialize()
 {
 	this->SampleCount = 0;
 }
 
 /*  一つ分の受信データを解析し、AXIS Neuron の BVH データならば格納 */
-bool UPacketReaderNeuron::Read(const FArrayReaderPtr& data, UMocapPose* pose)
+bool FPacketReaderNeuron::Read(const FArrayReaderPtr& data, UMocapPose* pose)
 {
 	if (!CheckHeader(data)) return false;
 
@@ -211,7 +211,7 @@ bool UPacketReaderNeuron::Read(const FArrayReaderPtr& data, UMocapPose* pose)
 }
 
 /* 一関節分の読込 */
-void UPacketReaderNeuron::ProcessSegment(const uint8* data, const int32 segmentNo, const int32 index, UMocapPose* pose)
+void FPacketReaderNeuron::ProcessSegment(const uint8* data, const int32 segmentNo, const int32 index, UMocapPose* pose)
 {
 	int32 num = segmentNo;
 	uint8 boneIndex = this->BoneIndices[num];
@@ -220,7 +220,7 @@ void UPacketReaderNeuron::ProcessSegment(const uint8* data, const int32 segmentN
 }
 
 /*  扱えるMVNのデータかヘッダを確認 */
-bool UPacketReaderNeuron::CheckHeader(const FArrayReaderPtr& data)
+bool FPacketReaderNeuron::CheckHeader(const FArrayReaderPtr& data)
 {
 	/*  ヘッダ部の長さ未満なら不正として終了 */
 	if (data->Num() < 63) return false;
@@ -258,7 +258,7 @@ bool UPacketReaderNeuron::CheckHeader(const FArrayReaderPtr& data)
 }
 
 /* 座標をUEの座標系で返す */
-FVector UPacketReaderNeuron::GetPosition(const uint8* data, const int32 index)
+FVector FPacketReaderNeuron::GetPosition(const uint8* data, const int32 index)
 {
 	return FVector(
 		GetFloat(data, index),
@@ -270,7 +270,7 @@ FVector UPacketReaderNeuron::GetPosition(const uint8* data, const int32 index)
 /**
 * 姿勢をUEの座標系で返す。AXIS Neuron では YXZ の順としておくこと！
 */
-FQuat UPacketReaderNeuron::GetQuaternion(const uint8* data, const int32 index)
+FQuat FPacketReaderNeuron::GetQuaternion(const uint8* data, const int32 index)
 {
 	/* deg を rad にし、さらに半分にする係数*/
 	static const float halfRadCoef = HALF_PI / 180.0f;
