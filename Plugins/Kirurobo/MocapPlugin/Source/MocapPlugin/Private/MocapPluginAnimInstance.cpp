@@ -209,9 +209,10 @@ bool UMocapPluginAnimInstance::NativeEvaluateAnimation(FPoseContext& Output)
 	for (int i = 0; i < Output.Pose.GetNumBones() && i < maxBones; i++) {
 		FCompactPoseBoneIndex index(i);
 		FQuat rotation = Output.Pose[index].GetRotation();
-		FCompactPoseBoneIndex parentBoneIndex = Output.Pose.GetParentBoneIndex(index);
-		if (parentBoneIndex >= 0 && parentBoneIndex < parentRotations.Num() && parentBoneIndex < maxBones) {
-			rotation = parentRotations[parentBoneIndex.GetInt()] * rotation;
+		FCompactPoseBoneIndex parentPoseBoneIndex = Output.Pose.GetParentBoneIndex(index);
+		int parentIndex = parentPoseBoneIndex.GetInt();
+		if (parentIndex >= 0 && parentIndex < maxBones) {
+			rotation = parentRotations[parentIndex] * rotation;
 		}
 		parentRotations[i] = rotation;
 	}
