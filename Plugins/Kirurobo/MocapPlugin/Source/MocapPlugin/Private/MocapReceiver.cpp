@@ -118,6 +118,7 @@ void UMocapReceiver::UdpReceivedCallback(const FArrayReaderPtr& data, const FIPv
 /* 指定されたユーザーIDの姿勢を返す */
 UMocapPose* UMocapReceiver::GetMocapPose(const int32 userId)
 {
+	if (!this->m_Socket) return this->IdentityPose;
 	if (userId < 0) return this->CurrentPose;
 	UMocapPose** pPose =  this->PoseMap.Find(userId);
 	if (pPose == nullptr) {
