@@ -33,10 +33,19 @@ void UMocapPose::Initialize()
 	}
 }
 
-/* 自分自身の複製作成して返す */
+/* 基準座標を返す */
 FVector UMocapPose::GetRootPosition()
 {
 	return this->OriginalRootPosition + this->PositionOffset;
+}
+
+/* 指定ボーンの姿勢を返す */
+FRotator UMocapPose::GetBoneRotator(const EMocapBones::Type bone)
+{
+	if (bone < 0 || bone > this->boneTotalNumber) {
+		return FRotator::ZeroRotator;
+	}
+	return FRotator(this->BoneRotations[bone]);
 }
 
 /* 自分自身の複製作成して返す */

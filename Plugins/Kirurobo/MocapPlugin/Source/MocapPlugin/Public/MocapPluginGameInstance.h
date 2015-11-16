@@ -64,7 +64,26 @@ public:
 		void Close();
 
 
-	/*  基準となる座標を取得 */
+	/*  基準座標を取得します */
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
-		static FVector GetRootPosition(const int32 userId, const UMocapPluginGameInstance* instance);
+		const FVector GetRootPosition(const int32 userId = -1);
+
+	/**
+	* モーキャプで受信されたボーンの姿勢を取得します。
+	* 各姿勢は親ボーンに対する相対姿勢です。
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Mocap")
+		const FRotator GetBoneRotator(const EMocapBones::Type bone, const int32 userId = -1);
+
+
+	///*  基準座標を取得します */
+	//UFUNCTION(BlueprintCallable, Category = "Mocap")
+	//	static FVector GetRootPosition(const UMocapPluginGameInstance* instance, const int32 userId = -1);
+
+	///**
+	//* モーキャプで受信されたボーンの姿勢を取得します。
+	//* 各姿勢は親ボーンに対する相対姿勢です。
+	//*/
+	//UFUNCTION(BlueprintCallable, Category = "Mocap")
+	//	static FRotator GetBoneRotator(const UMocapPluginGameInstance* instance, const EMocapBones::Type bone, const int32 userId = -1);
 };

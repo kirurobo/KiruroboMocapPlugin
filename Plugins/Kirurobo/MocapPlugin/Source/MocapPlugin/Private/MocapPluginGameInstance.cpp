@@ -45,17 +45,50 @@ void UMocapPluginGameInstance::Close()
 	}
 }
 
+/*  モデルの座標取得 */
+const FVector UMocapPluginGameInstance::GetRootPosition(const int32 userId)
+{
+	if (this->MocapReceiver == NULL) {
+		return FVector::ZeroVector;
+	}
+
+	return this->MocapReceiver->GetMocapPose(userId)->GetRootPosition();
+}
+
+
+/**
+* 指定ボーンのFRotatorを取得
+*/
+const FRotator UMocapPluginGameInstance::GetBoneRotator(const EMocapBones::Type bone, const int32 userId)
+{
+	if (this->MocapReceiver == NULL) {
+		return FRotator::ZeroRotator;
+	}
+	return this->MocapReceiver->GetMocapPose(userId)->BoneRotations[bone].Rotator();
+}
 
 //------------------------------------------------------------------------------------
 /*  静的メソッド */
 
 
-/*  モデルの座標取得 */
-FVector UMocapPluginGameInstance::GetRootPosition(const int32 userId, const UMocapPluginGameInstance* instance)
-{
-	if (instance == NULL || instance->MocapReceiver == NULL) {
-		return FVector::ZeroVector;
-	}
-
-	return instance->MocapReceiver->GetMocapPose(userId)->GetRootPosition();
-}
+///*  モデルの座標取得 */
+//FVector UMocapPluginGameInstance::GetRootPosition(const UMocapPluginGameInstance* instance, const int32 userId)
+//{
+//	if (instance == NULL || instance->MocapReceiver == NULL) {
+//		return FVector::ZeroVector;
+//	}
+//
+//	return instance->MocapReceiver->GetMocapPose(userId)->GetRootPosition();
+//}
+//
+//
+///**
+//* 指定ボーンのFRotatorを取得
+//*/
+//FRotator UMocapPluginGameInstance::GetBoneRotator(const UMocapPluginGameInstance* instance, const EMocapBones::Type bone, const int32 userId)
+//{
+//	if (instance == NULL || instance->MocapReceiver == NULL) {
+//		return FRotator::ZeroRotator;
+//	}
+//	return instance->MocapReceiver->GetMocapPose(userId)->BoneRotations[bone].Rotator();
+//}

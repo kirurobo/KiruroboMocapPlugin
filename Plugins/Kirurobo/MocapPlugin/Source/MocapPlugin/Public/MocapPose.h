@@ -44,6 +44,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
 		FVector GetRootPosition();
 
+	/** 座標を取得。モーキャプの値にオフセットを加えたものが得られます。 */
+	UFUNCTION(BlueprintCallable, Category = "Mocap")
+		FRotator GetBoneRotator(const EMocapBones::Type bone);
+
 	/** 複製を作成する */
 	UMocapPose* Clone();
 
