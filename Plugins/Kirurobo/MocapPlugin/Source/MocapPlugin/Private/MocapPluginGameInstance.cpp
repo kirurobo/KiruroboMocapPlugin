@@ -49,6 +49,10 @@ void UMocapPluginGameInstance::Close()
 const FVector UMocapPluginGameInstance::GetRootPosition(const int32 userId)
 {
 	if (this->MocapReceiver == NULL) {
+
+		// 接続がないのに取得要求があった場合は警告
+		UE_LOG(LogTemp, Warning, TEXT("MocapReceiver is null"));
+
 		return FVector::ZeroVector;
 	}
 
@@ -62,6 +66,10 @@ const FVector UMocapPluginGameInstance::GetRootPosition(const int32 userId)
 const FRotator UMocapPluginGameInstance::GetBoneRotator(const EMocapBones::Type bone, const int32 userId)
 {
 	if (this->MocapReceiver == NULL) {
+
+		// 接続がないのに取得要求があった場合は警告
+		UE_LOG(LogTemp, Warning, TEXT("MocapReceiver is null"));
+
 		return FRotator::ZeroRotator;
 	}
 	return this->MocapReceiver->GetMocapPose(userId)->BoneRotations[bone].Rotator();

@@ -48,8 +48,14 @@ bool UMocapReceiver::Connect()
 		m_Receiver = new FUdpSocketReceiver(m_Socket, FTimespan(0, 0, 1), TEXT("Mocap UDP receiver"));
 		m_Receiver->OnDataReceived().BindUObject(this, &UMocapReceiver::UdpReceivedCallback);
 
+		// 接続成功
+		UE_LOG(LogTemp, Log, TEXT("Connected to UDP port %d"), this->Port);
+
 		return true;
 	}
+
+	// 接続失敗
+	UE_LOG(LogTemp, Warning, TEXT("Could not open UDP port %d"), this->Port);
 	return false;
 }
 
