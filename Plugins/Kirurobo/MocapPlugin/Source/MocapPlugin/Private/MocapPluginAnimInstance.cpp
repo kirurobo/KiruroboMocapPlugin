@@ -180,10 +180,13 @@ uint8 UMocapPluginAnimInstance::GetBoneIndex(EMocapBones::Type boneIndex)
 */
 bool UMocapPluginAnimInstance::NativeEvaluateAnimation(FPoseContext& Output)
 {
+	/* モーションの自動適用オフか、MocapReceiver がなければ何もしない */
+	if (!this->AutoApply) return false;
+
 	if (this->MocapReceiver) {
-		UMocapPose* pose = this->MocapReceiver->GetMocapPose(this->UserId);
-		this->BoneRotations = pose->BoneRotations;
-		this->RootPosition = pose->GetRootPosition();
+		UMocapPose* mocapPose = this->MocapReceiver->GetMocapPose(this->UserId);
+		this->BoneRotations = mocapPose->BoneRotations;
+		this->RootPosition = mocapPose->GetRootPosition();
 	} else {
 		return false;
 	}

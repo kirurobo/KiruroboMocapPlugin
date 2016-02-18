@@ -75,10 +75,19 @@ public:
 		int32 UserId = -1;
 
 	/**
-	* 位置を移動させるかどうか
+	* 受信したモーションの座標に移動させるか。falseだと移動せず姿勢の適用のみとなる。
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
 		bool UseRootPosition = true;
+
+	/**
+	* モーションを自動的に反映させるか。
+	* 
+	* falseだとマッピングに関わらずモーションは自動では反映されない。
+	* ブループリントでモーションの値を取り出して独自の処理を行う場合にどうぞ。
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
+		bool AutoApply = true;
 
 	/**
 	* モデルとMocapPlugin間のボーン名対応を指定します
@@ -93,7 +102,7 @@ public:
 	//	bool EnforceTPose = true;
 
 	/**
-	* モデルの位置を取得する
+	* モデルの位置が代入されます
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mocap")
 		FVector RootPosition = FVector(0, 0, 0);
