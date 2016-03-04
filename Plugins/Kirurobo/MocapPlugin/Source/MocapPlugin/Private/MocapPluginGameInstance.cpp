@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Kirurobo
+// Copyright (c) 2015-2016 Kirurobo
 
 #include "MocapPluginPrivatePCH.h"
 #include "MocapPluginGameInstance.h"
@@ -7,6 +7,9 @@
 /*  初期化 */
 void UMocapPluginGameInstance::Init()
 {
+	Super::Init();
+
+
 	this->MocapReceiver = NewObject<UMocapReceiver>();
 	this->Connect();
 }
@@ -14,7 +17,11 @@ void UMocapPluginGameInstance::Init()
 /*  終了時の処理 */
 void UMocapPluginGameInstance::Shutdown()
 {
+	Super::Shutdown();
+
 	this->Close();
+
+	//UE_LOG(LogInit, Log, TEXT("MocapPluginGameInstance closed."));
 }
 
 /*  指定ポートに接続 */
@@ -23,6 +30,8 @@ bool UMocapPluginGameInstance::Connect(int32 port)
 	if (port > 0) {
 		this->PortNo = port;
 	}
+
+	//UE_LOG(LogInit, Log, TEXT("MocapPluginGameInstance connect!"));
 
 	if (this->MocapReceiver != NULL) {
 		this->MocapReceiver->Close();

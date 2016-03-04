@@ -1,7 +1,8 @@
-// Copyright (c) 2015 Kirurobo
+// Copyright (c) 2015-2016 Kirurobo
 
 #pragma once
 
+#include "Object.h"
 #include "MocapBones.h"
 #include "MocapPose.generated.h"
 
@@ -9,7 +10,7 @@
 /**
  * あるユーザーIDのある瞬間の姿勢を保持するコンテナ
  */
-UCLASS(ClassGroup = MocapPlugin)
+UCLASS(ClassGroup = "MocapPlugin")
 class UMocapPose : public UObject
 {
 	GENERATED_UCLASS_BODY()

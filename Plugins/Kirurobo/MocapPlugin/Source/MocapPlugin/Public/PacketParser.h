@@ -1,25 +1,25 @@
-// Copyright (c) 2015 Kirurobo
+// Copyright (c) 2015-2016 Kirurobo
 
 #pragma once
 
 #include "MocapBones.h"
 #include "MocapPose.h"
-
+#include "Networking.h"
 
 /**
- * UDPパケット解釈を担うクラス
- */
-class FPacketReader //: public UObject
+* UDPパケット解釈を担うクラス
+*/
+class PacketParser
 {
 public:
-	FPacketReader();
-	~FPacketReader();
+	PacketParser();
+	~PacketParser();
 
 protected:
 	/* ユーザーID */
 	int32 userId = 0;
 
-	virtual void Initialize();
+	void Initialize();
 
 	/*  floatとして解釈 */
 	float GetFloat(const uint8* data, const int32 index);
@@ -43,9 +43,6 @@ protected:
 	virtual bool CheckHeader(const FArrayReaderPtr& data);
 
 public:
-
 	/*  受信データ1つ分を解析してMocapPoseに格納 */
 	virtual bool Read(const FArrayReaderPtr& data, UMocapPose* pose);
 };
-
-

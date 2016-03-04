@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2015-2016 Kirurobo
 
 #pragma once
 
@@ -6,8 +6,10 @@
 #include "MocapReceiver.h"
 #include "MocapPluginGameInstance.generated.h"
 
-
-UCLASS(ClassGroup = MocapPlugin)
+/**
+* 起動時から最後まで受信クラスを保持するためGameInstanceに処理を含める
+*/
+UCLASS(ClassGroup = "MocapPlugin")
 class UMocapPluginGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
@@ -23,14 +25,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
 		int32 PortNo = 7001;		// 9763;	// Neuron:7001, MVN:9763
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
-	bool MultiUsers = false;
-
 	/**
 	* MVN から受信したユーザーIDにこの値を加えたものを、IDとして扱う
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
-		int32 MvnUserIdOffset = 100;
+		int32 MvnUserIdOffset = 0;
 
 	/**
 	* Axis Neuron から受信したユーザーIDにこの値を加えたものを、IDとして扱う

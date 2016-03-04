@@ -1,30 +1,23 @@
-// Copyright (c) 2015 Kirurobo
+// Copyright (c) 2015-2016 Kirurobo
 
 #include "MocapPluginPrivatePCH.h"
-#include "PacketReader.h"
+#include "PacketParser.h"
 
-
-//FPacketReader::FPacketReader(const FObjectInitializer& ObjectInitializer)
-//	: Super(ObjectInitializer)
-//{
-//	Initialize();
-//}
-
-FPacketReader::FPacketReader()
+PacketParser::PacketParser()
 {
 	Initialize();
 }
 
-FPacketReader::~FPacketReader()
+PacketParser::~PacketParser()
 {
 }
 
-void FPacketReader::Initialize()
+void PacketParser::Initialize()
 {
 }
 
 /*  一つ分の受信データを解析し、正しければ格納 */
-bool FPacketReader::Read(const FArrayReaderPtr& data, UMocapPose* pose)
+bool PacketParser::Read(const FArrayReaderPtr& data, UMocapPose* pose)
 {
 	if (!CheckHeader(data)) return false;
 
@@ -34,14 +27,14 @@ bool FPacketReader::Read(const FArrayReaderPtr& data, UMocapPose* pose)
 }
 
 /*  扱えるデータかヘッダを確認 */
-bool FPacketReader::CheckHeader(const FArrayReaderPtr& data)
+bool PacketParser::CheckHeader(const FArrayReaderPtr& data)
 {
 	return false;
 }
 
 //------------------------------------------------------------------------------------
 /*  整数として返す */
-int32 FPacketReader::GetInt32(const uint8* data, const int32 index)
+int32 PacketParser::GetInt32(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	int32* pInt;
@@ -54,7 +47,7 @@ int32 FPacketReader::GetInt32(const uint8* data, const int32 index)
 }
 
 /*  整数として返す */
-uint32 FPacketReader::GetUInt32(const uint8* data, const int32 index)
+uint32 PacketParser::GetUInt32(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	uint32* pInt;
@@ -66,7 +59,7 @@ uint32 FPacketReader::GetUInt32(const uint8* data, const int32 index)
 	return *pInt;
 }
 
-uint16 FPacketReader::GetUInt16(const uint8* data, const int32 index)
+uint16 PacketParser::GetUInt16(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	uint16* pData;
@@ -79,7 +72,7 @@ uint16 FPacketReader::GetUInt16(const uint8* data, const int32 index)
 }
 
 /*  実数として返す */
-float FPacketReader::GetFloat(const uint8* data, const int32 index)
+float PacketParser::GetFloat(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	float* pFloat;
@@ -92,7 +85,7 @@ float FPacketReader::GetFloat(const uint8* data, const int32 index)
 }
 
 /*  ビッグエンディアンをリトルエンディアンに直し、整数として返す */
-int32 FPacketReader::GetBigEndianInt32(const uint8* data, const int32 index)
+int32 PacketParser::GetBigEndianInt32(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	int32* pInt;
@@ -100,12 +93,12 @@ int32 FPacketReader::GetBigEndianInt32(const uint8* data, const int32 index)
 	value[2] = data[index + 1];
 	value[1] = data[index + 2];
 	value[0] = data[index + 3];
-	pInt = (int32*) value;
+	pInt = (int32*)value;
 	return *pInt;
 }
 
 /*  ビッグエンディアンをリトルエンディアンに直し、実数として返す */
-float FPacketReader::GetBigEndianFloat(const uint8* data, const int32 index)
+float PacketParser::GetBigEndianFloat(const uint8* data, const int32 index)
 {
 	uint8 value[4];
 	float* pFloat;
@@ -113,6 +106,6 @@ float FPacketReader::GetBigEndianFloat(const uint8* data, const int32 index)
 	value[2] = data[index + 1];
 	value[1] = data[index + 2];
 	value[0] = data[index + 3];
-	pFloat = (float*) value;
+	pFloat = (float*)value;
 	return *pFloat;
 }

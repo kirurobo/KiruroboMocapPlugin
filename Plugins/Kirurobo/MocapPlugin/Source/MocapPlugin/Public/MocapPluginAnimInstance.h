@@ -1,11 +1,11 @@
-// Copyright (c) 2015 Kirurobo
+// Copyright (c) 2015-2016 Kirurobo
 
 #pragma once
 
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimNodeSpaceConversions.h"
 #include "MocapBones.h"
-#include "MocapBoneTuple.h"
+#include "BoneIndexMap.h"
 #include "MocapReceiver.h"
 #include "MocapPluginGameInstance.h"
 #include "MocapPluginAnimInstance.generated.h"
@@ -13,13 +13,13 @@
 /**
  * MocapPluginGameInstanceへの接続を目的としたAnimInstance拡張
  */
-UCLASS(ClassGroup = MocapPlugin)
+UCLASS(ClassGroup = "MocapPlugin")
 class UMocapPluginAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
 public:
-	UMocapPluginAnimInstance(const FObjectInitializer& ObjectInitializer);
+	//UMocapPluginAnimInstance(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	/**
@@ -39,9 +39,19 @@ protected:
 	virtual bool NativeEvaluateAnimation(FPoseContext& Output) override;
 
 	/**
+	* スケルタルメッシュのボーン対応付け
+	*/
+	bool InitializeBoneMap();
+
+	/**
 	* 統一ボーン配列の要素数
 	*/
 	uint8 BoneCount = 0;
+
+	/**
+	* スケルタルメッシュのボーン番号との対応付け
+	*/
+	TArray<FBoneIndexMap> boneIndices;
 
 	///** 親ボーンの姿勢を再帰的に計算 */
 	//FQuat UMocapPluginAnimInstance::RecursiveParentRotation(FA2CSPose pose, TArray<FQuat> rotations, int32 boneIndex);
@@ -93,7 +103,7 @@ public:
 	* モデルとMocapPlugin間のボーン名対応を指定します
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mocap")
-		TArray<FMocapBoneTuple> BoneMap;
+		UDataTable *BoneTable;
 
 	///**
 	//* 自動的にT-ポーズに調整するか

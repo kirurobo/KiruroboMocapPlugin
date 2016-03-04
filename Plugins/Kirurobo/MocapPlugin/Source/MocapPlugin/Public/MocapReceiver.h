@@ -1,19 +1,20 @@
-// Copyright (c) 2015 Kirurobo
+// Copyright (c) 2015-2016 Kirurobo
 
 #pragma once
 
+#include "Object.h"
 #include "MocapBones.h"
 #include "MocapPose.h"
-#include "PacketReaderMvn.h"
-#include "PacketReaderKinect.h"
-#include "PacketReaderNeuron.h"
+#include "PacketParserMvn.h"
+#include "PacketParserNeuron.h"
+#include "PacketParserKinect.h"
 #include "MocapReceiver.generated.h"
 
 
 /**
  * UDP receiver base class
  */
-UCLASS(ClassGroup = MocapPlugin)
+UCLASS(ClassGroup = "MocapPlugin")
 class UMocapReceiver : public UObject
 {
 	GENERATED_UCLASS_BODY()
@@ -41,9 +42,9 @@ protected:
 	UPROPERTY()
 		UMocapPose *IdentityPose = nullptr;
 
-	FPacketReader *packetReaderMvn;
-	FPacketReader *packetReaderKinect;
-	FPacketReader *packetReaderNeuron;
+	PacketParser *packetParserMvn;
+	PacketParser *packetParserKinect;
+	PacketParser *packetParserNeuron;
 
 	virtual void Initialize();
 

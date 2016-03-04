@@ -1,87 +1,10 @@
-// Copyright (c) 2015 Kirurobo
+// Copyright (c) 2015-2016 Kirurobo
 
 #include "MocapPluginPrivatePCH.h"
 #include "MocapPluginAnimInstance.h"
+#include "MocapBoneMap.h"
 #include "Runtime/Launch/Resources/Version.h"
 
-/**
-* コンストラクタ
-*/
-UMocapPluginAnimInstance::UMocapPluginAnimInstance(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{
-	/* グレーマンの骨格に従ってデフォルト値を設定 */
-	this->BoneMap.Add(FMocapBoneTuple(FName("root"), EMocapBones::Root));
-	this->BoneMap.Add(FMocapBoneTuple(FName("pelvis"), EMocapBones::Pelvis));
-	this->BoneMap.Add(FMocapBoneTuple(FName("spine_01"), EMocapBones::Spine01));
-	this->BoneMap.Add(FMocapBoneTuple(FName("spine_01"), EMocapBones::Spine01L3));
-	this->BoneMap.Add(FMocapBoneTuple(FName("spine_02"), EMocapBones::Spine02));
-	this->BoneMap.Add(FMocapBoneTuple(FName("spine_03"), EMocapBones::Spine03));
-	this->BoneMap.Add(FMocapBoneTuple(FName("clavicle_l"), EMocapBones::LeftClavicle));
-	this->BoneMap.Add(FMocapBoneTuple(FName("upperarm_l"), EMocapBones::LeftUpperArm));
-	this->BoneMap.Add(FMocapBoneTuple(FName("lowerarm_l"), EMocapBones::LeftLowerArm));
-	this->BoneMap.Add(FMocapBoneTuple(FName("hand_l"), EMocapBones::LeftHand));
-	this->BoneMap.Add(FMocapBoneTuple(FName("clavicle_r"), EMocapBones::RightClavicle));
-	this->BoneMap.Add(FMocapBoneTuple(FName("upperarm_r"), EMocapBones::RightUpperArm));
-	this->BoneMap.Add(FMocapBoneTuple(FName("lowerarm_r"), EMocapBones::RightLowerArm));
-	this->BoneMap.Add(FMocapBoneTuple(FName("hand_r"), EMocapBones::RightHand));
-	this->BoneMap.Add(FMocapBoneTuple(FName("neck_01"), EMocapBones::Neck));
-	this->BoneMap.Add(FMocapBoneTuple(FName("head"), EMocapBones::Head));
-	this->BoneMap.Add(FMocapBoneTuple(FName("thigh_l"), EMocapBones::LeftThigh));
-	this->BoneMap.Add(FMocapBoneTuple(FName("calf_l"), EMocapBones::LeftCalf));
-	this->BoneMap.Add(FMocapBoneTuple(FName("foot_l"), EMocapBones::LeftFoot));
-	this->BoneMap.Add(FMocapBoneTuple(FName("ball_l"), EMocapBones::LeftBall));
-	this->BoneMap.Add(FMocapBoneTuple(FName("thigh_r"), EMocapBones::RightThigh));
-	this->BoneMap.Add(FMocapBoneTuple(FName("calf_r"), EMocapBones::RightCalf));
-	this->BoneMap.Add(FMocapBoneTuple(FName("foot_r"), EMocapBones::RightFoot));
-	this->BoneMap.Add(FMocapBoneTuple(FName("ball_r"), EMocapBones::RightBall));
-	this->BoneMap.Add(FMocapBoneTuple(FName("lowerarm_twist_l"), EMocapBones::LeftLowerArmTwist));
-	this->BoneMap.Add(FMocapBoneTuple(FName("upperarm_twist_l"), EMocapBones::LeftUpperArmTwist));
-	this->BoneMap.Add(FMocapBoneTuple(FName("thumb_01_l"), EMocapBones::LeftThumb01));
-	this->BoneMap.Add(FMocapBoneTuple(FName("thumb_02_l"), EMocapBones::LeftThumb02));
-	this->BoneMap.Add(FMocapBoneTuple(FName("thumb_03_l"), EMocapBones::LeftThumb03));
-	this->BoneMap.Add(FMocapBoneTuple(FName("index_01_l"), EMocapBones::LeftInHandIndex));
-	this->BoneMap.Add(FMocapBoneTuple(FName("index_01_l"), EMocapBones::LeftIndex01));
-	this->BoneMap.Add(FMocapBoneTuple(FName("index_02_l"), EMocapBones::LeftIndex02));
-	this->BoneMap.Add(FMocapBoneTuple(FName("index_03_l"), EMocapBones::LeftIndex03));
-	this->BoneMap.Add(FMocapBoneTuple(FName("middle_01_l"), EMocapBones::LeftInHandMiddle));
-	this->BoneMap.Add(FMocapBoneTuple(FName("middle_01_l"), EMocapBones::LeftMiddle01));
-	this->BoneMap.Add(FMocapBoneTuple(FName("middle_02_l"), EMocapBones::LeftMiddle02));
-	this->BoneMap.Add(FMocapBoneTuple(FName("middle_03_l"), EMocapBones::LeftMiddle03));
-	this->BoneMap.Add(FMocapBoneTuple(FName("ring_01_l"), EMocapBones::LeftInHandRing));
-	this->BoneMap.Add(FMocapBoneTuple(FName("ring_01_l"), EMocapBones::LeftRing01));
-	this->BoneMap.Add(FMocapBoneTuple(FName("ring_02_l"), EMocapBones::LeftRing02));
-	this->BoneMap.Add(FMocapBoneTuple(FName("ring_03_l"), EMocapBones::LeftRing03));
-	this->BoneMap.Add(FMocapBoneTuple(FName("pinky_01_l"), EMocapBones::LeftInHandPinky));
-	this->BoneMap.Add(FMocapBoneTuple(FName("pinky_01_l"), EMocapBones::LeftPinky01));
-	this->BoneMap.Add(FMocapBoneTuple(FName("pinky_02_l"), EMocapBones::LeftPinky02));
-	this->BoneMap.Add(FMocapBoneTuple(FName("pinky_03_l"), EMocapBones::LeftPinky03));
-	this->BoneMap.Add(FMocapBoneTuple(FName("lowerarm_twist_r"), EMocapBones::RightLowerArmTwist));
-	this->BoneMap.Add(FMocapBoneTuple(FName("upperarm_twist_r"), EMocapBones::RightUpperArmTwist));
-	this->BoneMap.Add(FMocapBoneTuple(FName("thumb_01_r"), EMocapBones::RightThumb01));
-	this->BoneMap.Add(FMocapBoneTuple(FName("thumb_02_r"), EMocapBones::RightThumb02));
-	this->BoneMap.Add(FMocapBoneTuple(FName("thumb_03_r"), EMocapBones::RightThumb03));
-	this->BoneMap.Add(FMocapBoneTuple(FName("index_01_r"), EMocapBones::RightInHandIndex));
-	this->BoneMap.Add(FMocapBoneTuple(FName("index_01_r"), EMocapBones::RightIndex01));
-	this->BoneMap.Add(FMocapBoneTuple(FName("index_02_r"), EMocapBones::RightIndex02));
-	this->BoneMap.Add(FMocapBoneTuple(FName("index_03_r"), EMocapBones::RightIndex03));
-	this->BoneMap.Add(FMocapBoneTuple(FName("middle_01_r"), EMocapBones::RightInHandMiddle));
-	this->BoneMap.Add(FMocapBoneTuple(FName("middle_01_r"), EMocapBones::RightMiddle01));
-	this->BoneMap.Add(FMocapBoneTuple(FName("middle_02_r"), EMocapBones::RightMiddle02));
-	this->BoneMap.Add(FMocapBoneTuple(FName("middle_03_r"), EMocapBones::RightMiddle03));
-	this->BoneMap.Add(FMocapBoneTuple(FName("ring_01_r"), EMocapBones::RightInHandRing));
-	this->BoneMap.Add(FMocapBoneTuple(FName("ring_01_r"), EMocapBones::RightRing01));
-	this->BoneMap.Add(FMocapBoneTuple(FName("ring_02_r"), EMocapBones::RightRing02));
-	this->BoneMap.Add(FMocapBoneTuple(FName("ring_03_r"), EMocapBones::RightRing03));
-	this->BoneMap.Add(FMocapBoneTuple(FName("pinky_01_r"), EMocapBones::RightInHandPinky));
-	this->BoneMap.Add(FMocapBoneTuple(FName("pinky_01_r"), EMocapBones::RightPinky01));
-	this->BoneMap.Add(FMocapBoneTuple(FName("pinky_02_r"), EMocapBones::RightPinky02));
-	this->BoneMap.Add(FMocapBoneTuple(FName("pinky_03_r"), EMocapBones::RightPinky03));
-	this->BoneMap.Add(FMocapBoneTuple(FName("thigh_twist_l"), EMocapBones::LeftThighTwist));
-	this->BoneMap.Add(FMocapBoneTuple(FName("calf_twist_l"), EMocapBones::LeftCalfTwist));
-	this->BoneMap.Add(FMocapBoneTuple(FName("thigh_twist_r"), EMocapBones::RightThighTwist));
-	this->BoneMap.Add(FMocapBoneTuple(FName("calf_twist_r"), EMocapBones::RightCalfTwist));
-}
 
 /**
 * 初期化
@@ -112,6 +35,44 @@ void UMocapPluginAnimInstance::NativeInitializeAnimation()
 			}
 		}
 	}
+
+	//USkeletalMeshComponent* meshComponent = GetOwningComponent();
+
+	InitializeBoneMap();
+}
+
+/**
+* ボーン名でのDataTableから番号での対応付けを生成
+*/
+bool UMocapPluginAnimInstance::InitializeBoneMap()
+{
+	USkeletalMeshComponent* meshComponent = GetOwningComponent();
+	if (!meshComponent) return false;
+
+	if (!this->BoneTable) return false;
+	UDataTable* table = this->BoneTable;
+	if (!table) return false;
+
+	UE_LOG(LogInit, Log, TEXT("Init bone map for mesh : %s"), *(meshComponent->GetName()));
+
+	/* 各ボーンに受信された変形を反映 */
+	TArray<FName> mapArray = table->GetRowNames();
+	this->boneIndices.Empty(mapArray.Num());
+	for (int i = 0; i < mapArray.Num(); i++) {
+		FMocapBoneMap* map = table->FindRow<FMocapBoneMap>(mapArray[i], TEXT("MocapBoneMap"));
+		FName boneName = map->MeshBone;
+		uint8 mocapBoneIndex = map->MocapBone;
+
+		FBoneIndexType boneIndex = meshComponent->GetBoneIndex(boneName);
+		if (boneIndex < 0 || boneIndex > 0x7FFF) continue;
+
+		FBoneIndexMap boneIndexMap = FBoneIndexMap();
+		boneIndexMap.MeshBoneIndex = boneIndex;
+		boneIndexMap.MocapBone = map->MocapBone;
+
+		this->boneIndices.Add(boneIndexMap);
+	}
+	return true;
 }
 
 /**
@@ -221,13 +182,9 @@ bool UMocapPluginAnimInstance::NativeEvaluateAnimation(FPoseContext& Output)
 	}
 
 	/* 各ボーンに受信された変形を反映 */
-	for (int i = 0; i < this->BoneMap.Num(); i++) {
-		FName boneName = this->BoneMap[i].Bone;
-		uint8 mocapBoneIndex = this->BoneMap[i].MocapBone;
-
-		FBoneIndexType boneIndex = meshComponent->GetBoneIndex(boneName);
-		if (boneIndex < 0 || boneIndex > 0x7FFF) continue;
-
+	for (int i = 0; i < this->boneIndices.Num(); i++) {
+		uint8 mocapBoneIndex = this->boneIndices[i].MocapBone;
+		FBoneIndexType boneIndex = this->boneIndices[i].MeshBoneIndex;
 		FCompactPoseBoneIndex index(boneIndex);
 		FTransform transform = Output.Pose[index];
 		FQuat rotation = this->BoneRotations[mocapBoneIndex];
@@ -272,13 +229,9 @@ bool UMocapPluginAnimInstance::NativeEvaluateAnimation(FPoseContext& Output)
 	}
 
 	/* 各ボーンに受信された変形を反映 */
-	for (int i = 0; i < this->BoneMap.Num(); i++) {
-		FName boneName = this->BoneMap[i].Bone;
-		uint8 mocapBoneIndex = this->BoneMap[i].MocapBone;
-
-		int32 boneIndex = meshComponent->GetBoneIndex(boneName);
-		if (boneIndex < 0) continue;
-
+	for (int i = 0; i < this->boneIndices.Num(); i++) {
+		uint8 mocapBoneIndex = this->boneIndices[i].MocapBone;
+		int32 boneIndex = this->boneIndices[i].MeshBoneIndex;
 		FTransform transform = pose.Bones[boneIndex];
 		FQuat rotation = this->BoneRotations[mocapBoneIndex];
 

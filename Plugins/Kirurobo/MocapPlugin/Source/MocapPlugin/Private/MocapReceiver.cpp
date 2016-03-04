@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Kirurobo
+// Copyright (c) 2015-2016 Kirurobo
 
 #include "MocapPluginPrivatePCH.h"
 #include "MocapReceiver.h"
@@ -40,9 +40,9 @@ bool UMocapReceiver::Connect()
 		CurrentPose = NewObject<UMocapPose>();
 
 		/*  パケット解釈部 */
-		packetReaderMvn = new FPacketReaderMvn();
-		//packetReaderKinect = new FPacketReaderKinect();
-		packetReaderNeuron = new FPacketReaderNeuron();
+		packetParserMvn = new PacketParserMvn();
+		//packetParserKinect = new PacketParserKinect();
+		packetParserNeuron = new PacketParserNeuron();
 
 		/* UDP受信を開始 */
 		m_Receiver = new FUdpSocketReceiver(m_Socket, FTimespan(0, 0, 1), TEXT("Mocap UDP receiver"));
@@ -73,14 +73,17 @@ void UMocapReceiver::Close()
 		m_Socket->Close();
 		delete m_Socket;
 		m_Socket = NULL;
+
+		UE_LOG(LogInit, Log, TEXT("MocapReceiver closed port %d."), this->Port);
 	}
-	if (packetReaderMvn != NULL) {
-		delete (FPacketReaderMvn*)packetReaderMvn;
-		packetReaderMvn = NULL;
+
+	if (packetParserMvn != NULL) {
+		delete (PacketParserMvn*) packetParserMvn;
+		packetParserMvn = NULL;
 	}
-	if (packetReaderNeuron != NULL) {
-		delete (FPacketReaderNeuron*)packetReaderNeuron;
-		packetReaderNeuron = NULL;
+	if (packetParserNeuron != NULL) {
+		delete (PacketParserNeuron*) packetParserNeuron;
+		packetParserNeuron = NULL;
 	}
 }
 
@@ -90,10 +93,10 @@ void UMocapReceiver::UdpReceivedCallback(const FArrayReaderPtr& data, const FIPv
 	bool received = false;
 	
 	/* モーキャプソフト毎にその形式か調べて受信する */
-	if (packetReaderMvn->Read(data, this->CurrentPose)) {
+	if (packetParserMvn->Read(data, this->CurrentPose)) {
 		received = true;
 		this->CurrentPose->UserId += this->MvnUserIdOffset;
-	} else if (packetReaderNeuron->Read(data, this->CurrentPose)) {
+	} else if (packetParserNeuron->Read(data, this->CurrentPose)) {
 		received = true;
 		this->CurrentPose->UserId += this->NeuronUserIdOffset;
 	}
