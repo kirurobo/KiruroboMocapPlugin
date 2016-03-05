@@ -163,12 +163,6 @@ PacketParserNeuron::~PacketParserNeuron()
 {
 }
 
-//PacketParserNeuron::PacketParserNeuron(const FObjectInitializer& ObjectInitializer)
-//	: Super(ObjectInitializer)
-//{
-//	Initialize();
-//}
-
 // Sets default values
 void PacketParserNeuron::Initialize()
 {
@@ -229,29 +223,55 @@ bool PacketParserNeuron::CheckHeader(const FArrayReaderPtr& data)
 
 	/*  先頭の文字列を確認 */
 	if (GetUInt16(raw, 0) != 0xDDFF) return false;
+	index += 2;
+	
+	/* バージョン番号 4バイト */
+	uint8 verBuildNumb = raw[index++];
+	uint8 verRevision = raw[index++];
+	uint8 verMinor = raw[index++];
+	uint8 verMajor = raw[index++];
 
-	/*  データカウント */
-	index = 6;
-	uint32 dataCount = GetUInt32(raw, index);
-	index += 4;
+	/* Ver.1.x.x.x までのみ対応 */
+	if (verMajor > 1) return false;
 
-	/*  データ数と受信された長さが一致しなければ不正として終了 */
-	if (data->Num() != (dataCount * 4 + 64)) return false;
+	/* Ver.1.0 と Ver.1.1 でヘッダーの仕様が変わった */
+	if (verMinor < 1) {
+		/*  このパケット中のデータ数 4バイト */
+		uint32 dataCount = GetUInt32(raw, index);
+		index += 4;
+		
+		/*  データ数と受信された長さが一致しなければ不正として終了 */
+		if (data->Num() != (dataCount * 4 + 64)) return false;
 
-	/*  変位もデータに含まれるか */
-	this->hasDisplacement = (GetUInt32(raw, index) != 0);
-	index += 4;
+		/*  変位もデータに含まれるか */
+		this->hasDisplacement = (GetUInt32(raw, index) != 0);
+		index += 4;
 
-	/*  リファレンスが含まれるか */
-	this->hasReference = (GetUInt32(raw, index) != 0);
-	index += 4;
+		/*  リファレンスが含まれるか */
+		this->hasReference = (GetUInt32(raw, index) != 0);
+		index += 4;
+	} else {
+		/*  このパケット中のデータ数 4バイト */
+		uint16 dataCount = GetUInt16(raw, index);
+		index += 2;
+		
+		/*  データ数と受信された長さが一致しなければ不正として終了 */
+		if (data->Num() != (dataCount * 4 + 64)) return false;
+
+		/*  変位もデータに含まれるか */
+		this->hasDisplacement = (raw[index++] != 0);
+
+		/*  リファレンスが含まれるか */
+		this->hasReference = (raw[index++] != 0);
+	}
 
 	/*  アバターID */
 	this->userId = GetUInt32(raw, index);
 	index += 4;
 
 	/*  ヘッダーの終了を確認 */
-	if (GetUInt16(raw, 62) != 0xEEFF) return false;
+	index = 62;
+	if (GetUInt16(raw, index) != 0xEEFF) return false;
 
 	return true;
 }
