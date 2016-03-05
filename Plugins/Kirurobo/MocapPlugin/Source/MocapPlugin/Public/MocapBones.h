@@ -5,6 +5,21 @@
 #include "MocapBones.generated.h"
 
 /**
+* モーキャプ装置の分類
+*/
+UENUM(BlueprintType)
+namespace EMocapDevices
+{
+	enum Type
+	{
+		None = 0,
+		Mvn = 1,
+		PerceptionNeuron = 2,
+		Kinect = 3,
+	};
+}
+
+/**
 * このプラグインで保持する関節名と番号
 */
 UENUM(BlueprintType)

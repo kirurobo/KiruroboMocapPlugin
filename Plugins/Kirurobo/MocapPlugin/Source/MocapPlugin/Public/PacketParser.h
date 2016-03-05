@@ -40,9 +40,12 @@ protected:
 	int32 GetBigEndianInt32(const uint8* data, const int32 index);
 
 	/*  UDPパケットのヘッダを確認 */
-	virtual bool CheckHeader(const FArrayReaderPtr& data);
+	virtual bool CheckHeader(const uint8* data, const int32 length);
 
 public:
+	/* 複数のモーキャプを利用した際に区別するため、ユーザーIDに加える数 */
+	int32 UserIdOffset = 0;
+
 	/*  受信データ1つ分を解析してMocapPoseに格納 */
-	virtual bool Read(const FArrayReaderPtr& data, UMocapPose* pose);
+	virtual bool Read(const uint8* data, int32 length, UMocapPose* pose);
 };

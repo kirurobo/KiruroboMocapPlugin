@@ -20,10 +20,10 @@ class UMocapPluginGameInstance : public UGameInstance
 public:
 
 	/**
-	* UDPの受信ポート
+	* ソケット
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
-		int32 PortNo = 7001;		// 9763;	// Neuron:7001, MVN:9763
+		TArray<UMocapUdpSocket*> Sockets;	// Neuron:7001, MVN:9763
 
 	/**
 	* MVN から受信したユーザーIDにこの値を加えたものを、IDとして扱う
@@ -54,7 +54,7 @@ public:
 	* 接続を開始します。既に接続中の場合は一旦切断されます。
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
-		bool Connect(int32 port = -1);
+		bool Connect();
 
 	/**
 	* 接続を終了します

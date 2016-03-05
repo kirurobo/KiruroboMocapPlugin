@@ -33,10 +33,10 @@ protected:
 	FQuat GetQuaternion(const uint8* data, const int32 index);
 
 	/*  UDPパケットのヘッダを確認 */
-	bool CheckHeader(const FArrayReaderPtr& data);
+	bool CheckHeader(const uint8* data, const int32 length);
 
 public:
 
 	/*  受信データ1つ分を解析 */
-	bool Read(const FArrayReaderPtr& data, UMocapPose* pose);
+	bool Read(const uint8* data, const int32 length, UMocapPose* pose);
 };

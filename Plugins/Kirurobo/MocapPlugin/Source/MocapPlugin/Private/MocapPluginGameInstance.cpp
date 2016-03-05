@@ -11,6 +11,19 @@ void UMocapPluginGameInstance::Init()
 
 
 	this->MocapReceiver = NewObject<UMocapReceiver>();
+
+	UMocapUdpSocket* socket = NewObject<UMocapUdpSocket>();
+	//socket->ParentReceiver = this->MocapReceiver;
+	socket->Port = 9763;
+	this->Sockets.Add(socket);
+
+	UMocapUdpSocket* neuronSocket = NewObject<UMocapUdpSocket>();
+	//neuronSocket->ParentReceiver = this->MocapReceiver;
+	neuronSocket->Port = 8888;
+	this->Sockets.Add(neuronSocket);
+
+	this->MocapReceiver->Sockets = this->Sockets;
+
 	this->Connect();
 }
 
@@ -25,18 +38,13 @@ void UMocapPluginGameInstance::Shutdown()
 }
 
 /*  指定ポートに接続 */
-bool UMocapPluginGameInstance::Connect(int32 port)
+bool UMocapPluginGameInstance::Connect()
 {
-	if (port > 0) {
-		this->PortNo = port;
-	}
-
 	//UE_LOG(LogInit, Log, TEXT("MocapPluginGameInstance connect!"));
 
 	if (this->MocapReceiver != NULL) {
 		this->MocapReceiver->Close();
 
-		this->MocapReceiver->Port = this->PortNo;
 		this->MocapReceiver->MvnUserIdOffset = this->MvnUserIdOffset;
 		this->MocapReceiver->NeuronUserIdOffset = this->NeuronUserIdOffset;
 		this->MocapReceiver->KinectUserIdOffset = this->KinectUserIdOffset;

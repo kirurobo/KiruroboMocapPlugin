@@ -3,11 +3,13 @@
 #pragma once
 
 #include "Object.h"
+#include "Sockets.h"
 #include "MocapBones.h"
 #include "MocapPose.h"
-#include "PacketParserMvn.h"
-#include "PacketParserNeuron.h"
-#include "PacketParserKinect.h"
+#include "MocapUdpSocket.h"
+//#include "PacketParserMvn.h"
+//#include "PacketParserNeuron.h"
+//#include "PacketParserKinect.h"
 #include "MocapReceiver.generated.h"
 
 
@@ -22,11 +24,12 @@ class UMocapReceiver : public UObject
 public:
 	virtual ~UMocapReceiver();
 
-protected:
-	FSocket *m_Socket;
-	FUdpSocketReceiver *m_Receiver;
-	FRunnableThread *m_Thread;
+	/**
+	* プロパティで指定されているポートで受信を開始します
+	*/
+	bool Parse(const uint8* data, const int32 length, PacketParser* parser);
 
+protected:
 	/* モーキャプのデータをユーザーID毎に保存するコンテナ */
 	TMap<int32, UMocapPose*> PoseMap;
 
@@ -42,21 +45,14 @@ protected:
 	UPROPERTY()
 		UMocapPose *IdentityPose = nullptr;
 
-	PacketParser *packetParserMvn;
-	PacketParser *packetParserKinect;
-	PacketParser *packetParserNeuron;
-
 	virtual void Initialize();
-
-	/*  UDP受信時のコールバック */
-	void UdpReceivedCallback(const FArrayReaderPtr& data, const FIPv4Endpoint& ip);
 
 public:
 	/**
-	* UDPのポート番号
+	* TCP または UDP のソケット
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
-		int32 Port = 7001;	// 9763;
+		TArray<UMocapUdpSocket*> Sockets;
 
 	/**
 	* MVN から受信したユーザーIDにこの値を加えたものを、IDとして扱う
@@ -88,6 +84,7 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
 		void Close();
+
 
 	/**
 	* 指定したユーザーIDについて現在の姿勢を取得します。

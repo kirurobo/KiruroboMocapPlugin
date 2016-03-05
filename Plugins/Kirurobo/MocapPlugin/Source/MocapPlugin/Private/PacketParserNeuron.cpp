@@ -170,9 +170,9 @@ void PacketParserNeuron::Initialize()
 }
 
 /*  一つ分の受信データを解析し、AXIS Neuron の BVH データならば格納 */
-bool PacketParserNeuron::Read(const FArrayReaderPtr& data, UMocapPose* pose)
+bool PacketParserNeuron::Read(const uint8* raw, const int32 length, UMocapPose* pose)
 {
-	if (!CheckHeader(data)) return false;
+	if (!CheckHeader(raw, length)) return false;
 
 	/* ヘッダーを読んだ時点でユーザーIDが分るので設定 */
 	pose->UserId = this->userId;
@@ -183,7 +183,6 @@ bool PacketParserNeuron::Read(const FArrayReaderPtr& data, UMocapPose* pose)
 	}
 
 	/* 読込開始 */
-	const uint8* raw = data->GetData();
 	int index = 64;
 
 	/*  Refecence ありの場合、float16 × 6 がヘッダー後に存在するのでスキップ */
@@ -213,12 +212,11 @@ void PacketParserNeuron::ProcessSegment(const uint8* data, const int32 segmentNo
 }
 
 /*  扱えるMVNのデータかヘッダを確認 */
-bool PacketParserNeuron::CheckHeader(const FArrayReaderPtr& data)
+bool PacketParserNeuron::CheckHeader(const uint8* raw, const int32 length)
 {
 	/*  ヘッダ部の長さ未満なら不正として終了 */
-	if (data->Num() < 63) return false;
+	if (length < 63) return false;
 
-	const uint8* raw = data->GetData();
 	int32 index = 0;
 
 	/*  先頭の文字列を確認 */
@@ -241,7 +239,7 @@ bool PacketParserNeuron::CheckHeader(const FArrayReaderPtr& data)
 		index += 4;
 		
 		/*  データ数と受信された長さが一致しなければ不正として終了 */
-		if (data->Num() != (dataCount * 4 + 64)) return false;
+		if (length != (dataCount * 4 + 64)) return false;
 
 		/*  変位もデータに含まれるか */
 		this->hasDisplacement = (GetUInt32(raw, index) != 0);
@@ -256,7 +254,7 @@ bool PacketParserNeuron::CheckHeader(const FArrayReaderPtr& data)
 		index += 2;
 		
 		/*  データ数と受信された長さが一致しなければ不正として終了 */
-		if (data->Num() != (dataCount * 4 + 64)) return false;
+		if (length != (dataCount * 4 + 64)) return false;
 
 		/*  変位もデータに含まれるか */
 		this->hasDisplacement = (raw[index++] != 0);

@@ -17,17 +17,14 @@ void PacketParser::Initialize()
 }
 
 /*  一つ分の受信データを解析し、正しければ格納 */
-bool PacketParser::Read(const FArrayReaderPtr& data, UMocapPose* pose)
+bool PacketParser::Read(const uint8* data, const int32 length, UMocapPose* pose)
 {
-	if (!CheckHeader(data)) return false;
-
-	const uint8* raw = data->GetData();
-
+	if (!CheckHeader(data, length)) return false;
 	return true;
 }
 
 /*  扱えるデータかヘッダを確認 */
-bool PacketParser::CheckHeader(const FArrayReaderPtr& data)
+bool PacketParser::CheckHeader(const uint8* data, const int32 length)
 {
 	return false;
 }
