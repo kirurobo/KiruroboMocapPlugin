@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Kirurobo
+﻿// Copyright (c) 2015-2016 Kirurobo
 
 #include "MocapPluginPrivatePCH.h"
 #include "MocapUdpSocket.h"
@@ -18,12 +18,12 @@ UMocapUdpSocket::~UMocapUdpSocket()
 // Sets default values
 void UMocapUdpSocket::Initialize()
 {
-	if (this->Device == EMocapDevices::Mvn) {
-		this->m_Parser = new PacketParserMvn();
-	} else if (this->Device == EMocapDevices::PerceptionNeuron) {
-		this->m_Parser = new PacketParserNeuron();
-	}
-	//this->m_Parser->userIdOffset = this->userIdOffset;
+	//if (this->Device == EMocapDevices::Mvn) {
+	//	this->m_Parser = new PacketParserMvn();
+	//} else if (this->Device == EMocapDevices::PerceptionNeuron) {
+	//	this->m_Parser = new PacketParserNeuron();
+	//}
+	////this->m_Parser->userIdOffset = this->userIdOffset;
 }
 
 
@@ -42,14 +42,15 @@ bool UMocapUdpSocket::Connect()
 		/* UDP受信を開始 */
 		m_Receiver = new FUdpSocketReceiver(m_Socket, FTimespan(0, 0, 1), TEXT("Mocap UDP receiver"));
 		m_Receiver->OnDataReceived().BindUObject(this, &UMocapUdpSocket::UdpReceivedCallback);
+		m_Receiver->Start();
 
 		// 接続成功
-		UE_LOG(LogTemp, Log, TEXT("Connected to UDP port %d"), this->Port);
+		UE_LOG(LogTemp, Log, TEXT("MocapUdpSocket connected to port %d"), this->Port);
 		return true;
 	}
 
 	// 接続失敗
-	UE_LOG(LogTemp, Warning, TEXT("Could not open UDP port %d"), this->Port);
+	UE_LOG(LogTemp, Warning, TEXT("MocapUdpSocket could not open port %d"), this->Port);
 	return false;
 }
 
@@ -69,7 +70,7 @@ void UMocapUdpSocket::Close()
 		delete m_Socket;
 		m_Socket = NULL;
 
-		UE_LOG(LogInit, Log, TEXT("MocapUdpSocket closed port %d."), this->Port);
+		UE_LOG(LogTemp, Log, TEXT("MocapUdpSocket closed port %d."), this->Port);
 	}
 
 	if (m_Parser != NULL) {
@@ -78,12 +79,22 @@ void UMocapUdpSocket::Close()
 	}
 }
 
+/**
+* 親となるReceiverを設定する
+*/
+void UMocapUdpSocket::SetParent(UMocapReceiver* parent)
+{
+	this->m_ParentReceiver = parent;
+}
+
 /*  UDPでデータが届いた際のコールバック */
 void UMocapUdpSocket::UdpReceivedCallback(const FArrayReaderPtr& data, const FIPv4Endpoint&)
 {
-	//if (this->ParentReceiver) {
-	//	const uint8* raw = data->GetData();
-	//	return this->ParentReceiver->Parse(raw, data->Num());
-	//}
+	UE_LOG(LogTemp, Log, TEXT("MocapUdpSocket data received."), this->Port);
+
+	if (this->m_ParentReceiver) {
+		const uint8* raw = data->GetData();
+		this->m_ParentReceiver->Parse(raw, data->Num());
+	}
 	return;
 }

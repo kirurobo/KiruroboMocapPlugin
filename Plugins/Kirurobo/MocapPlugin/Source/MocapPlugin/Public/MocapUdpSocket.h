@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Kirurobo
+﻿// Copyright (c) 2015-2016 Kirurobo
 
 #pragma once
 
@@ -27,6 +27,8 @@ protected:
 	FRunnableThread *m_Thread;
 	
 	PacketParser* m_Parser;
+
+	UMocapReceiver* m_ParentReceiver;	/* 親となっているReceiver */
 
 	/*  UDP受信時のコールバック */
 	void UdpReceivedCallback(const FArrayReaderPtr& data, const FIPv4Endpoint& ip);
@@ -63,6 +65,12 @@ public:
 	*/
 	UFUNCTION(Category = "Mocap")
 		void Close();
+
+	/**
+	* 親を設定します
+	*/
+	UFUNCTION(Category = "Mocap")
+		void SetParent(UMocapReceiver* parent);
 
 	DECLARE_EVENT_ThreeParams(FReceivedDelegate, FReceivedEvent, const uint8*, PacketParser*, UMocapPose*)
 	

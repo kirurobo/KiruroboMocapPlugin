@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Kirurobo
+﻿// Copyright (c) 2015-2016 Kirurobo
 
 #include "MocapPluginPrivatePCH.h"
 #include "MocapPluginGameInstance.h"
@@ -19,7 +19,7 @@ void UMocapPluginGameInstance::Init()
 
 	UMocapUdpSocket* neuronSocket = NewObject<UMocapUdpSocket>();
 	//neuronSocket->ParentReceiver = this->MocapReceiver;
-	neuronSocket->Port = 8888;
+	neuronSocket->Port = 7001;
 	this->Sockets.Add(neuronSocket);
 
 	this->MocapReceiver->Sockets = this->Sockets;
@@ -33,8 +33,6 @@ void UMocapPluginGameInstance::Shutdown()
 	Super::Shutdown();
 
 	this->Close();
-
-	//UE_LOG(LogInit, Log, TEXT("MocapPluginGameInstance closed."));
 }
 
 /*  指定ポートに接続 */

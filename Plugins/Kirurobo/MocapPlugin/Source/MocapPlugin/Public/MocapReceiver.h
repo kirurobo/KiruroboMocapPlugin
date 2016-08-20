@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Kirurobo
+﻿// Copyright (c) 2015-2016 Kirurobo
 
 #pragma once
 
@@ -7,9 +7,9 @@
 #include "MocapBones.h"
 #include "MocapPose.h"
 #include "MocapUdpSocket.h"
-//#include "PacketParserMvn.h"
-//#include "PacketParserNeuron.h"
-//#include "PacketParserKinect.h"
+#include "PacketParserMvn.h"
+#include "PacketParserNeuron.h"
+#include "PacketParserKinect.h"
 #include "MocapReceiver.generated.h"
 
 
@@ -27,7 +27,7 @@ public:
 	/**
 	* プロパティで指定されているポートで受信を開始します
 	*/
-	bool Parse(const uint8* data, const int32 length, PacketParser* parser);
+	bool Parse(const uint8* data, const int32 length);
 
 protected:
 	/* モーキャプのデータをユーザーID毎に保存するコンテナ */
@@ -44,6 +44,10 @@ protected:
 	/* 空の姿勢 */
 	UPROPERTY()
 		UMocapPose *IdentityPose = nullptr;
+
+	/* パケット解析の担当 */
+	UPROPERTY()
+		TArray<PacketParser*> Parsers;
 
 	virtual void Initialize();
 
