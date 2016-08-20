@@ -46,8 +46,7 @@ protected:
 		UMocapPose *IdentityPose = nullptr;
 
 	/* パケット解析の担当 */
-	UPROPERTY()
-		TArray<PacketParser*> Parsers;
+	PacketParser* Parsers[3];
 
 	virtual void Initialize();
 

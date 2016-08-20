@@ -12,9 +12,9 @@ UMocapReceiver::UMocapReceiver( const FObjectInitializer& ObjectInitializer )
 
 UMocapReceiver::~UMocapReceiver()
 {
-	for (int i = 0; i < this->Parsers.Num(); i++) {
-		delete this->Parsers[i];
-	}
+	//for (int i = 0; i < sizeof(this->Parsers); i++) {
+	//	delete this->Parsers[i];
+	//}
 }
 
 // Sets default values
@@ -22,8 +22,9 @@ void UMocapReceiver::Initialize()
 {
 	this->IdentityPose = NewObject<UMocapPose>();
 
-	this->Parsers.Add(new PacketParserMvn());
-	this->Parsers.Add(new PacketParserNeuron());
+	this->Parsers[0] = new PacketParserMvn();
+	this->Parsers[1] = new PacketParserNeuron();
+	this->Parsers[2] = NULL;
 
 	/* 受信されたデータの保存領域 */
 	CurrentPose = this->IdentityPose;
@@ -63,8 +64,9 @@ bool UMocapReceiver::Parse(const uint8* raw, const int32 length)
 	bool received = false;
 	
 	/* モーキャプソフト毎にその形式か調べて受信する */
-	for (int i = 0; i < this->Parsers.Num(); i++) {
+	for (int i = 0; i < sizeof(this->Parsers); i++) {
 		PacketParser* parser = this->Parsers[i];
+		if (parser == NULL) continue;
 		if (parser->Read(raw, length, this->CurrentPose)) {
 			received = true;
 			break;

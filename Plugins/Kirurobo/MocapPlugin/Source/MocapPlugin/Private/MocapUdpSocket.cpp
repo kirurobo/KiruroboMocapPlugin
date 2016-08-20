@@ -90,7 +90,7 @@ void UMocapUdpSocket::SetParent(UMocapReceiver* parent)
 /*  UDPでデータが届いた際のコールバック */
 void UMocapUdpSocket::UdpReceivedCallback(const FArrayReaderPtr& data, const FIPv4Endpoint&)
 {
-	UE_LOG(LogTemp, Log, TEXT("MocapUdpSocket data received."), this->Port);
+	//UE_LOG(LogTemp, Log, TEXT("MocapUdpSocket data received."));
 
 	if (this->m_ParentReceiver) {
 		const uint8* raw = data->GetData();
