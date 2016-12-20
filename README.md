@@ -22,6 +22,13 @@ A plug-in for Unreal Engine 4 to receive real-time motion from MVN and Perceptio
 
 ## 変更点
 
+### v.1.1.0
+
++ UE4.11 以降に対応させました。
++ Axis Neuron Ver. 3.8.42.6503 およびその時点での old header に対応させました。
++ 受信ポートのデフォルトを 7002 にしました。
++ 鏡像モードのチェックボックスが MocapAnimInstance に追加されています。ただし仕様が定まっていないため、チェックしない方が良いです。
+
 ### v.1.0.1
 
 + NaNativeEvaluateAnimation() で TArray を作成することでメモリを大量に消費していた点を修正しました。
