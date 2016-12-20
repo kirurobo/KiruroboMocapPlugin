@@ -3,7 +3,8 @@ A plug-in for Unreal Engine 4 to receive real-time motion from MVN and Perceptio
 
 ## ダウンロード
 [Releases のページ](https://github.com/kirurobo/KiruroboMocapPlugin/releases) にビルド済のものを置いてあります。  
-あと、Kinect v2 でリアルタイム送信をするオマケも置いてあります。
+また、Kinect v2 でリアルタイム送信をするオマケも置いてあります。
+
 
 ---
 
