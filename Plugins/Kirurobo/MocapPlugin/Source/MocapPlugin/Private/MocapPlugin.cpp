@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Kirurobo
+// Copyright (c) 2015 Kirurobo
 
 #include "MocapPluginPrivatePCH.h"
 

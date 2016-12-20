@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2016 Kirurobo
+// Copyright (c) 2015 Kirurobo
 
 #include "MocapPluginPrivatePCH.h"
 #include "MocapReceiver.h"
@@ -12,94 +12,126 @@ UMocapReceiver::UMocapReceiver( const FObjectInitializer& ObjectInitializer )
 
 UMocapReceiver::~UMocapReceiver()
 {
-	//for (int i = 0; i < sizeof(this->Parsers); i++) {
-	//	delete this->Parsers[i];
-	//}
 }
 
 // Sets default values
 void UMocapReceiver::Initialize()
 {
 	this->IdentityPose = NewObject<UMocapPose>();
-
-	this->Parsers[0] = new PacketParserMvn();
-	this->Parsers[1] = new PacketParserNeuron();
-	this->Parsers[2] = NULL;
-
-	/* 受信されたデータの保存領域 */
-	CurrentPose = this->IdentityPose;
 }
 
 
-/**
-* 受信を開始
-*/
+/*  ポートに接続 */
+//
+/*  Begin Play イベントで呼ぶこと。 */
 bool UMocapReceiver::Connect()
 {
-	bool connected = false;
-	for (int i = 0; i < this->Sockets.Num(); i++) {
-		if (this->Sockets[i]->Connect()) {
-			this->Sockets[i]->SetParent(this);	/* 接続と同時に親を設定 */
-			connected = true;
-		}
+	if (m_Socket == NULL) {
+		UE_LOG(LogInit, Warning, TEXT("Initialize UDP socket %d..."), this->Port);
+		m_Socket = FUdpSocketBuilder(TEXT("Mocap UDP socket"))
+			.AsNonBlocking()
+			.AsReusable()
+			.BoundToPort(this->Port)
+			.Build();
 	}
-	return connected;
+
+	if (m_Socket != NULL) {
+		const bool bAutoDeleteSelf = true;
+		const bool bAutoDeleteRunnable = true;
+
+		/* 受信されたデータの保存領域 */
+		CurrentPose = NewObject<UMocapPose>();
+
+		/*  パケット解釈部 */
+		packetReaderMvn = new FPacketReaderMvn();
+		//packetReaderKinect = new FPacketReaderKinect();
+		packetReaderNeuron = new FPacketReaderNeuron();
+
+		/* UDP受信を開始 */
+		UE_LOG(LogInit, Warning, TEXT("Start UDP receiver."));
+		m_Receiver = new FUdpSocketReceiver(
+			m_Socket,
+			FTimespan::FromMilliseconds(100),
+			TEXT("Mocap UDP receiver")
+		);
+		m_Receiver->OnDataReceived().BindUObject(this, &UMocapReceiver::UdpReceivedCallback);
+		m_Receiver->Start();
+		return true;
+	}
+	return false;
 }
 
-/**
-* 受信を終了してポートを閉じる
-*/
+/*  受信を終了してポートを閉じる */
+/* 	End Play イベントで呼ぶこと。 */
 void UMocapReceiver::Close()
 {
-	for (int i = 0; i < this->Sockets.Num(); i++) {
-		this->Sockets[i]->Close();
+	UE_LOG(LogInit, Warning, TEXT("Close UDP receiver."));
+
+	if (m_Receiver != NULL) {
+		m_Receiver->Exit();
+		delete m_Receiver;
+		m_Receiver = NULL;
+	}
+
+	if (m_Socket != NULL) {
+		m_Socket->Close();
+		delete m_Socket;
+		m_Socket = NULL;
+	}
+	if (packetReaderMvn != NULL) {
+		delete (FPacketReaderMvn*)packetReaderMvn;
+		packetReaderMvn = NULL;
+	}
+	if (packetReaderNeuron != NULL) {
+		delete (FPacketReaderNeuron*)packetReaderNeuron;
+		packetReaderNeuron = NULL;
 	}
 }
 
-/**
-* データが届いた際の読み込み処理
-*/
-bool UMocapReceiver::Parse(const uint8* raw, const int32 length)
+/*  UDPでデータが届いた際のコールバック */
+void UMocapReceiver::UdpReceivedCallback(const FArrayReaderPtr& data, const FIPv4Endpoint&)
 {
 	bool received = false;
-	
+
+	//UE_LOG(LogInit, Warning, TEXT("UDP packet reached."));
+
 	/* モーキャプソフト毎にその形式か調べて受信する */
-	for (int i = 0; i < sizeof(this->Parsers); i++) {
-		PacketParser* parser = this->Parsers[i];
-		if (parser == NULL) continue;
-		if (parser->Read(raw, length, this->CurrentPose)) {
-			received = true;
-			break;
-		}
+	if (packetReaderMvn->Read(data, this->CurrentPose)) {
+		received = true;
+		this->CurrentPose->UserId += this->MvnUserIdOffset;
+	} else if (packetReaderNeuron->Read(data, this->CurrentPose)) {
+		received = true;
+		this->CurrentPose->UserId += this->NeuronUserIdOffset;
 	}
-	if (!received) return false;
 
 	/* 受信できたらユーザーID毎に保存する */
-	int userId = this->CurrentPose->UserId;
+	if (received) {
+		int userId = this->CurrentPose->UserId;
 
-	UMocapPose** pPose = this->PoseMap.Find(userId);
-	if (pPose == nullptr) {
-		/*  初回受信。現在の位置が原点となるようオフセットを設定 */
-		//this->CurrentPose->PositionOffset = -this->CurrentPose->OriginalRootPosition;
-		UMocapPose* pose = this->CurrentPose->Clone();
-		pose->PositionOffset = -pose->OriginalRootPosition;
-		if (this->PoseMap.Num() < 1) {
-			this->CurrentPose->PositionOffset = pose->PositionOffset;
+		//UE_LOG(LogInit, Warning, TEXT("User ID: %d"), userId);
+
+		UMocapPose** pPose = this->PoseMap.Find(userId);
+		if (pPose == nullptr) {
+			/*  初回受信。現在の位置が原点となるようオフセットを設定 */
+			//this->CurrentPose->PositionOffset = -this->CurrentPose->OriginalRootPosition;
+			UMocapPose* pose = this->CurrentPose->Clone();
+			pose->PositionOffset = -pose->OriginalRootPosition;
+			if (this->PoseMap.Num() < 1) {
+				this->CurrentPose->PositionOffset = pose->PositionOffset;
+			}
+			this->Poses.Add(pose);				/* GCで削除されるのを防ぐため、こちらにも登録 */
+			this->PoseMap.Add(userId, pose);
 		}
-		this->Poses.Add(pose);				/* GCで削除されるのを防ぐため、こちらにも登録 */
-		this->PoseMap.Add(userId, pose);
+		else {
+			/* 既に受信されたユーザーならば値の複製のみ */
+			this->CurrentPose->CopyTo(*pPose);
+		}
 	}
-	else {
-		/* 既に受信されたユーザーならば値の複製のみ */
-		this->CurrentPose->CopyTo(*pPose);
-	}
-	return true;
 }
 
 /* 指定されたユーザーIDの姿勢を返す */
 UMocapPose* UMocapReceiver::GetMocapPose(const int32 userId)
 {
-	if (this->CurrentPose == nullptr) return this->IdentityPose;
 	if (userId < 0) return this->CurrentPose;
 	UMocapPose** pPose =  this->PoseMap.Find(userId);
 	if (pPose == nullptr) {

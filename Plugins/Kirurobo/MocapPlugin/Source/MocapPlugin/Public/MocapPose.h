@@ -1,8 +1,7 @@
-﻿// Copyright (c) 2015-2016 Kirurobo
+// Copyright (c) 2015 Kirurobo
 
 #pragma once
 
-#include "Object.h"
 #include "MocapBones.h"
 #include "MocapPose.generated.h"
 
@@ -10,7 +9,7 @@
 /**
  * あるユーザーIDのある瞬間の姿勢を保持するコンテナ
  */
-UCLASS(ClassGroup = "MocapPlugin")
+UCLASS(ClassGroup = MocapPlugin)
 class UMocapPose : public UObject
 {
 	GENERATED_UCLASS_BODY()
@@ -44,10 +43,6 @@ public:
 	/** 座標を取得。モーキャプの値にオフセットを加えたものが得られます。 */
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
 		FVector GetRootPosition();
-
-	/** 座標を取得。モーキャプの値にオフセットを加えたものが得られます。 */
-	UFUNCTION(BlueprintCallable, Category = "Mocap")
-		FRotator GetBoneRotator(const EMocapBones::Type bone);
 
 	/** 複製を作成する */
 	UMocapPose* Clone();

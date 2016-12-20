@@ -1,25 +1,47 @@
-﻿// Copyright (c) 2015-2016 Kirurobo
+// Copyright (c) 2015 Kirurobo
 
 #pragma once
 
+#include "Runtime/Launch/Resources/Version.h"
+
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimNodeSpaceConversions.h"
+#if (ENGINE_MAJOR_VERSION >= 4) && (ENGINE_MINOR_VERSION >= 11)
+#include "Animation/AnimInstanceProxy.h"
+#endif
+
 #include "MocapBones.h"
-#include "BoneIndexMap.h"
+#include "MocapBoneTuple.h"
 #include "MocapReceiver.h"
 #include "MocapPluginGameInstance.h"
 #include "MocapPluginAnimInstance.generated.h"
 
+#if (ENGINE_MAJOR_VERSION >= 4) && (ENGINE_MINOR_VERSION >= 11)
+class UMocapPluginAnimInstance;
+struct FMocapPluginAnimInstanceProxy : public FAnimInstanceProxy
+{
+	UMocapPluginAnimInstance* MocapPluginAnimInstance;
+
+	FMocapPluginAnimInstanceProxy() : FAnimInstanceProxy(), MocapPluginAnimInstance(nullptr)
+	{}
+
+	FMocapPluginAnimInstanceProxy(UAnimInstance* animInstance) : FAnimInstanceProxy(animInstance), MocapPluginAnimInstance(nullptr)
+	{}
+
+	virtual bool Evaluate(FPoseContext& Output) override;
+};
+#endif
+
 /**
  * MocapPluginGameInstanceへの接続を目的としたAnimInstance拡張
  */
-UCLASS(ClassGroup = "MocapPlugin")
+UCLASS(ClassGroup = MocapPlugin)
 class UMocapPluginAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
 public:
-	//UMocapPluginAnimInstance(const FObjectInitializer& ObjectInitializer);
+	UMocapPluginAnimInstance(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	/**
@@ -33,25 +55,34 @@ protected:
 	*/
 	void NativeUpdateAnimation(float deltaTime) override;
 
+#if (ENGINE_MAJOR_VERSION >= 4) && (ENGINE_MINOR_VERSION >= 11)
 	/**
 	* アニメーション評価タイミングで呼ばれます
 	*/
-	virtual bool NativeEvaluateAnimation(FPoseContext& Output) override;
+	bool EvaluateMocap(struct FPoseContext& Output);
 
+	FMocapPluginAnimInstanceProxy Proxy;
+
+	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override
+	{
+		return&Proxy;
+	}
+
+	virtual void DestroyAnimInstanceProxy(FAnimInstanceProxy* proxy) override
+	{}
+
+	friend struct FMocapPluginAnimInstanceProxy;
+#else
 	/**
-	* スケルタルメッシュのボーン対応付け
+	* アニメーション評価タイミングで呼ばれます
 	*/
-	bool InitializeBoneMap();
+	virtual bool NativeEvaluateAnimation(struct FPoseContext& Output) override;
+#endif
 
 	/**
 	* 統一ボーン配列の要素数
 	*/
 	uint8 BoneCount = 0;
-
-	/**
-	* スケルタルメッシュのボーン番号との対応付け
-	*/
-	TArray<FBoneIndexMap> boneIndices;
 
 	///** 親ボーンの姿勢を再帰的に計算 */
 	//FQuat UMocapPluginAnimInstance::RecursiveParentRotation(FA2CSPose pose, TArray<FQuat> rotations, int32 boneIndex);
@@ -85,25 +116,22 @@ public:
 		int32 UserId = -1;
 
 	/**
-	* 受信したモーションの座標に移動させるか。falseだと移動せず姿勢の適用のみとなる。
+	* 位置を移動させるかどうか
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
 		bool UseRootPosition = true;
 
 	/**
-	* モーションを自動的に反映させるか。
-	* 
-	* falseだとマッピングに関わらずモーションは自動では反映されない。
-	* ブループリントでモーションの値を取り出して独自の処理を行う場合にどうぞ。
+	* モデルの位置を取得する
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
-		bool AutoApply = true;
+		bool IsMirrored = false;
 
 	/**
 	* モデルとMocapPlugin間のボーン名対応を指定します
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mocap")
-		UDataTable *BoneTable;
+		TArray<FMocapBoneTuple> BoneMap;
 
 	///**
 	//* 自動的にT-ポーズに調整するか
@@ -112,7 +140,7 @@ public:
 	//	bool EnforceTPose = true;
 
 	/**
-	* モデルの位置が代入されます
+	* モデルの位置を取得する
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mocap")
 		FVector RootPosition = FVector(0, 0, 0);
@@ -147,4 +175,5 @@ public:
 
 	//UFUNCTION(BlueprintCallable, Category = "Mocap")
 	//	FComponentSpacePoseLink ApplyMocapPose(FComponentSpacePoseLink pose) const;
+
 };

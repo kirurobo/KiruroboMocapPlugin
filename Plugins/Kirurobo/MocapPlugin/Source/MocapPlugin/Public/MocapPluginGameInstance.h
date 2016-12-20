@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2016 Kirurobo
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,10 +6,8 @@
 #include "MocapReceiver.h"
 #include "MocapPluginGameInstance.generated.h"
 
-/**
-* 起動時から最後まで受信クラスを保持するためGameInstanceに処理を含める
-*/
-UCLASS(ClassGroup = "MocapPlugin")
+
+UCLASS(ClassGroup = MocapPlugin)
 class UMocapPluginGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
@@ -20,10 +18,13 @@ class UMocapPluginGameInstance : public UGameInstance
 public:
 
 	/**
-	* ソケット
+	* UDPの受信ポート
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
-		TArray<UMocapUdpSocket*> Sockets;	// Neuron:7001, MVN:9763
+		int32 PortNo = 7002;		// 9763;	// Neuron:7002, MVN:9763
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
+	bool MultiUsers = false;
 
 	/**
 	* MVN から受信したユーザーIDにこの値を加えたものを、IDとして扱う
@@ -54,7 +55,7 @@ public:
 	* 接続を開始します。既に接続中の場合は一旦切断されます。
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
-		bool Connect();
+		bool Connect(int32 port = -1);
 
 	/**
 	* 接続を終了します
@@ -63,26 +64,7 @@ public:
 		void Close();
 
 
-	/*  基準座標を取得します */
+	/*  基準となる座標を取得 */
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
-		const FVector GetRootPosition(const int32 userId = -1);
-
-	/**
-	* モーキャプで受信されたボーンの姿勢を取得します。
-	* 各姿勢は親ボーンに対する相対姿勢です。
-	*/
-	UFUNCTION(BlueprintCallable, Category = "Mocap")
-		const FRotator GetBoneRotator(const EMocapBones::Type bone, const int32 userId = -1);
-
-
-	///*  基準座標を取得します */
-	//UFUNCTION(BlueprintCallable, Category = "Mocap")
-	//	static FVector GetRootPosition(const UMocapPluginGameInstance* instance, const int32 userId = -1);
-
-	///**
-	//* モーキャプで受信されたボーンの姿勢を取得します。
-	//* 各姿勢は親ボーンに対する相対姿勢です。
-	//*/
-	//UFUNCTION(BlueprintCallable, Category = "Mocap")
-	//	static FRotator GetBoneRotator(const UMocapPluginGameInstance* instance, const EMocapBones::Type bone, const int32 userId = -1);
+		static FVector GetRootPosition(const int32 userId, const UMocapPluginGameInstance* instance);
 };

@@ -1,23 +1,8 @@
-﻿// Copyright (c) 2015-2016 Kirurobo
+// Copyright (c) 2015 Kirurobo
 
 #pragma once
 
 #include "MocapBones.generated.h"
-
-/**
-* モーキャプ装置の分類
-*/
-UENUM(BlueprintType)
-namespace EMocapDevices
-{
-	enum Type
-	{
-		None = 0,
-		Mvn = 1,
-		PerceptionNeuron = 2,
-		Kinect = 3,
-	};
-}
 
 /**
 * このプラグインで保持する関節名と番号
@@ -99,8 +84,97 @@ namespace EMocapBones
 		RightPinky02 = 69,
 		RightPinky03 = 70,
 	};
+
+	//const uint8 Mirrored[71] = {
+	//	0,1,2,3,4,5,6,7,8,
+	//	15,16,17,18,19,20,
+	//	9,10,11,12,13,14,
+	//	46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,
+	//	21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45
+	//};
 }
 
+/**
+* 反転する際のボーン対応
+*/
+UENUM()
+namespace EMocapMirroredBones
+{
+	enum Type
+	{
+		Root = 0,
+		Pelvis = 1,
+		Spine01 = 2,
+		Spine01L3 = 3,
+		Spine02 = 4,
+		Spine03 = 5,
+		Neck = 6,
+		Neck02 = 7,
+		Head = 8,
+		LeftThigh = 9,
+		LeftThighTwist = 10,
+		LeftCalf = 11,
+		LeftCalfTwist = 12,
+		LeftFoot = 13,
+		LeftBall = 14,
+		RightThigh = 15,
+		RightThighTwist = 16,
+		RightCalf = 17,
+		RightCalfTwist = 18,
+		RightFoot = 19,
+		RightBall = 20,
+		LeftClavicle = 21,
+		LeftUpperArm = 22,
+		LeftLowerArm = 23,
+		LeftHand = 24,
+		LeftLowerArmTwist = 25,
+		LeftUpperArmTwist = 26,
+		LeftThumb01 = 27,
+		LeftThumb02 = 28,
+		LeftThumb03 = 29,
+		LeftInHandIndex = 30,
+		LeftIndex01 = 31,
+		LeftIndex02 = 32,
+		LeftIndex03 = 33,
+		LeftInHandMiddle = 34,
+		LeftMiddle01 = 35,
+		LeftMiddle02 = 36,
+		LeftMiddle03 = 37,
+		LeftInHandRing = 38,
+		LeftRing01 = 39,
+		LeftRing02 = 40,
+		LeftRing03 = 41,
+		LeftInHandPinky = 42,
+		LeftPinky01 = 43,
+		LeftPinky02 = 44,
+		LeftPinky03 = 45,
+		RightClavicle = 46,
+		RightUpperArm = 47,
+		RightLowerArm = 48,
+		RightHand = 49,
+		RightLowerArmTwist = 50,
+		RightUpperArmTwist = 51,
+		RightThumb01 = 52,
+		RightThumb02 = 53,
+		RightThumb03 = 54,
+		RightInHandIndex = 55,
+		RightIndex01 = 56,
+		RightIndex02 = 57,
+		RightIndex03 = 58,
+		RightInHandMiddle = 59,
+		RightMiddle01 = 60,
+		RightMiddle02 = 61,
+		RightMiddle03 = 62,
+		RightInHandRing = 63,
+		RightRing01 = 64,
+		RightRing02 = 65,
+		RightRing03 = 66,
+		RightInHandPinky = 67,
+		RightPinky01 = 68,
+		RightPinky02 = 69,
+		RightPinky03 = 70,
+	};
+}
 
 /**
 * MVN におけるボーン名

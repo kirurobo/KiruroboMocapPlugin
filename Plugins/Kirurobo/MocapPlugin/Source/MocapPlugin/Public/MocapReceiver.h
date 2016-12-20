@@ -1,22 +1,19 @@
-﻿// Copyright (c) 2015-2016 Kirurobo
+// Copyright (c) 2015 Kirurobo
 
 #pragma once
 
-#include "Object.h"
-#include "Sockets.h"
 #include "MocapBones.h"
 #include "MocapPose.h"
-#include "MocapUdpSocket.h"
-#include "PacketParserMvn.h"
-#include "PacketParserNeuron.h"
-#include "PacketParserKinect.h"
+#include "PacketReaderMvn.h"
+#include "PacketReaderKinect.h"
+#include "PacketReaderNeuron.h"
 #include "MocapReceiver.generated.h"
 
 
 /**
  * UDP receiver base class
  */
-UCLASS(ClassGroup = "MocapPlugin")
+UCLASS(ClassGroup = MocapPlugin)
 class UMocapReceiver : public UObject
 {
 	GENERATED_UCLASS_BODY()
@@ -24,12 +21,11 @@ class UMocapReceiver : public UObject
 public:
 	virtual ~UMocapReceiver();
 
-	/**
-	* プロパティで指定されているポートで受信を開始します
-	*/
-	bool Parse(const uint8* data, const int32 length);
-
 protected:
+	FSocket *m_Socket;
+	FUdpSocketReceiver *m_Receiver;
+	FRunnableThread *m_Thread;
+
 	/* モーキャプのデータをユーザーID毎に保存するコンテナ */
 	TMap<int32, UMocapPose*> PoseMap;
 
@@ -45,17 +41,21 @@ protected:
 	UPROPERTY()
 		UMocapPose *IdentityPose = nullptr;
 
-	/* パケット解析の担当 */
-	PacketParser* Parsers[3];
+	FPacketReader *packetReaderMvn;
+	FPacketReader *packetReaderKinect;
+	FPacketReader *packetReaderNeuron;
 
 	virtual void Initialize();
 
+	/*  UDP受信時のコールバック */
+	void UdpReceivedCallback(const FArrayReaderPtr& data, const FIPv4Endpoint& ip);
+
 public:
 	/**
-	* TCP または UDP のソケット
+	* UDPのポート番号
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mocap")
-		TArray<UMocapUdpSocket*> Sockets;
+		int32 Port = 7001;	// 9763;
 
 	/**
 	* MVN から受信したユーザーIDにこの値を加えたものを、IDとして扱う
@@ -87,7 +87,6 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Mocap")
 		void Close();
-
 
 	/**
 	* 指定したユーザーIDについて現在の姿勢を取得します。

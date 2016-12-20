@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2016 Kirurobo
+// Copyright (c) 2015 Kirurobo
 
 #include "MocapPluginPrivatePCH.h"
 #include "MocapPose.h"
@@ -33,19 +33,10 @@ void UMocapPose::Initialize()
 	}
 }
 
-/* 基準座標を返す */
+/* 自分自身の複製作成して返す */
 FVector UMocapPose::GetRootPosition()
 {
 	return this->OriginalRootPosition + this->PositionOffset;
-}
-
-/* 指定ボーンの姿勢を返す */
-FRotator UMocapPose::GetBoneRotator(const EMocapBones::Type bone)
-{
-	if (bone < 0 || bone > this->boneTotalNumber) {
-		return FRotator::ZeroRotator;
-	}
-	return FRotator(this->BoneRotations[bone]);
 }
 
 /* 自分自身の複製作成して返す */
