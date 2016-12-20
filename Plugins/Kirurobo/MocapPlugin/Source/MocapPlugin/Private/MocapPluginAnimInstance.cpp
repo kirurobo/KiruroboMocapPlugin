@@ -195,7 +195,7 @@ bool FMocapPluginAnimInstanceProxy::Evaluate(FPoseContext& Output)
 
 bool UMocapPluginAnimInstance::EvaluateMocap(struct FPoseContext& Output)
 #else
-//bool UMocapPluginAnimInstance::NativeEvaluateAnimation(struct FPoseContext& Output)
+bool UMocapPluginAnimInstance::NativeEvaluateAnimation(struct FPoseContext& Output)
 #endif
 {
 	if (this->MocapReceiver) {

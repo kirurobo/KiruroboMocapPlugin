@@ -2,6 +2,7 @@
 
 #include "MocapPluginPrivatePCH.h"
 #include "MocapReceiver.h"
+#include "Runtime/Launch/Resources/Version.h"
 
 
 UMocapReceiver::UMocapReceiver( const FObjectInitializer& ObjectInitializer )
@@ -55,7 +56,9 @@ bool UMocapReceiver::Connect()
 			TEXT("Mocap UDP receiver")
 		);
 		m_Receiver->OnDataReceived().BindUObject(this, &UMocapReceiver::UdpReceivedCallback);
+#if (ENGINE_MAJOR_VERSION >= 4) && (ENGINE_MINOR_VERSION >= 11)
 		m_Receiver->Start();
+#endif
 		return true;
 	}
 	return false;
